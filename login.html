@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMCGSS - Login</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0b1f3a, #164b8a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 1050px;
+            min-height: 620px;
+            background: #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        /* LEFT SIDE */
+        .login-left {
+            width: 50%;
+            background: linear-gradient(150deg, #0b1f3a, #1769d1);
+            color: white;
+            padding: 55px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            background: white;
+            color: #1769d1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 25px;
+        }
+
+        .login-left h1 {
+            font-size: 38px;
+            margin-bottom: 12px;
+        }
+
+        .login-left h2 {
+            font-size: 20px;
+            font-weight: 400;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .login-left p {
+            color: #d8e7ff;
+            line-height: 1.7;
+            font-size: 15px;
+            max-width: 430px;
+        }
+
+        .features {
+            margin-top: 35px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 15px 0;
+            color: #eaf2ff;
+        }
+
+        .feature-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* RIGHT SIDE */
+        .login-right {
+            width: 50%;
+            padding: 55px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-right h2 {
+            font-size: 30px;
+            color: #102a50;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #718096;
+            margin-bottom: 32px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #243b5a;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            height: 50px;
+            border: 1px solid #d7deea;
+            border-radius: 10px;
+            padding: 0 15px;
+            font-size: 14px;
+            outline: none;
+            background: #f9fbff;
+            transition: 0.2s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #2673dd;
+            box-shadow: 0 0 0 3px rgba(38, 115, 221, 0.12);
+            background: white;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
+            padding-right: 60px;
+        }
+
+        .show-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: none;
+            color: #2673dd;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 5px 0 25px;
+            font-size: 13px;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: #66758a;
+        }
+
+        .remember input {
+            width: 15px;
+            height: 15px;
+        }
+
+        .forgot {
+            color: #1769d1;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-btn {
+            width: 100%;
+            height: 52px;
+            border: none;
+            border-radius: 10px;
+            background: #1769d1;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .login-btn:hover {
+            background: #0e55b0;
+            transform: translateY(-1px);
+        }
+
+        .error {
+            display: none;
+            color: #d93025;
+            background: #fff1f0;
+            border: 1px solid #ffc9c5;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            font-size: 13px;
+        }
+
+        .demo-info {
+            margin-top: 25px;
+            padding: 14px;
+            background: #f2f7ff;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #5b6b82;
+            text-align: center;
+        }
+
+        .footer {
+            text-align: center;
+            color: #9aa7b8;
+            font-size: 12px;
+            margin-top: 25px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 800px) {
+            .login-container {
+                flex-direction: column;
+            }
+
+            .login-left,
+            .login-right {
+                width: 100%;
+            }
+
+            .login-left {
+                padding: 35px;
+            }
+
+            .login-right {
+                padding: 35px;
+            }
+
+            .features {
+                display: none;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .login-left h1 {
+                font-size: 30px;
+            }
+
+            .login-right h2 {
+                font-size: 25px;
+            }
+
+            .login-left,
+            .login-right {
+                padding: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-container">
+
+    <!-- LEFT SECTION -->
+    <div class="login-left">
+
+        <div class="logo">IM</div>
+
+        <h1>IMCGSS</h1>
+
+        <h2>
+            Internal Marks Consolidation
+            & Grade Sheet System
+        </h2>
+
+        <p>
+            A centralized academic management system for
+            managing internal marks, validation, consolidation
+            and grade sheet generation.
+        </p>
+
+        <div class="features">
+
+            <div class="feature">
+                <div class="feature-icon">✓</div>
+                <span>Secure Academic Records</span>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">✓</div>
+                <span>Internal Marks Management</span>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">✓</div>
+                <span>Grade Sheet Generation</span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RIGHT SECTION -->
+    <div class="login-right">
+
+        <h2>Welcome Back</h2>
+
+        <p class="subtitle">
+            Sign in to access the IMCGSS dashboard
+        </p>
+
+        <div id="errorMessage" class="error">
+            Please fill in all required fields.
+        </div>
+
+        <form id="loginForm">
+
+            <!-- USERNAME -->
+            <div class="form-group">
+
+                <label for="username">
+                    User ID / Username
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    placeholder="Enter your user ID"
+                >
+
+            </div>
+
+
+            <!-- PASSWORD -->
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <div class="password-wrapper">
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                    >
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword()">
+                        Show
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- ROLE -->
+            <div class="form-group">
+
+                <label for="role">
+                    Login As
+                </label>
+
+                <select id="role">
+
+                    <option value="">
+                        Select your role
+                    </option>
+
+                    <option value="Administrator">
+                        Administrator
+                    </option>
+
+                    <option value="Faculty">
+                        Faculty
+                    </option>
+
+                    <option value="Coordinator">
+                        Coordinator
+                    </option>
+
+                    <option value="HOD">
+                        HOD / Reviewer
+                    </option>
+
+                    <option value="Student">
+                        Student
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- OPTIONS -->
+            <div class="options">
+
+                <label class="remember">
+                    <input type="checkbox">
+                    Remember me
+                </label>
+
+                <a href="#" class="forgot">
+                    Forgot Password?
+                </a>
+
+            </div>
+
+
+            <!-- LOGIN -->
+            <button
+                type="submit"
+                class="login-btn">
+                Sign In
+            </button>
+
+        </form>
+
+
+        <div class="demo-info">
+            Demo mode: Enter any username and password
+            with a selected role.
+        </div>
+
+        <div class="footer">
+            © 2026 IMCGSS | Academic Administration System
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // Show / Hide password
+    function togglePassword() {
+
+        const password =
+            document.getElementById("password");
+
+        const button =
+            document.querySelector(".show-password");
+
+        if (password.type === "password") {
+
+            password.type = "text";
+            button.textContent = "Hide";
+
+        } else {
+
+            password.type = "password";
+            button.textContent = "Show";
+
+        }
+
+    }
+
+
+    // Login validation
+    document
+        .getElementById("loginForm")
+        .addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            const username =
+                document.getElementById("username").value.trim();
+
+            const password =
+                document.getElementById("password").value.trim();
+
+            const role =
+                document.getElementById("role").value;
+
+            const error =
+                document.getElementById("errorMessage");
+
+
+            if (username === "" ||
+                password === "" ||
+                role === "") {
+
+                error.style.display = "block";
+
+                error.textContent =
+                    "Please enter your User ID, Password and select your role.";
+
+                return;
+            }
+
+
+            // Store temporary login information
+            localStorage.setItem(
+                "imcgss_username",
+                username
+            );
+
+            localStorage.setItem(
+                "imcgss_role",
+                role
+            );
+
+            
+            error.style.display = "none";
+
+// Go to existing dashboard
+window.location.href = "index.html";
+        });
+
+</script>
+
+</body>
+</html>
