@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IMCGSS - Login</title>
+    <title>IMCGSS | Internal Marks & Grade Sheet System</title>
 
     <style>
         * {
@@ -13,273 +13,569 @@
             font-family: "Segoe UI", Arial, sans-serif;
         }
 
+        :root {
+            --primary: #243b64;
+            --primary-light: #eef3ff;
+            --accent: #4f7cff;
+            --bg: #f5f7fb;
+            --white: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --success: #16a34a;
+            --warning: #f59e0b;
+            --danger: #dc2626;
+        }
+
         body {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #0b1f3a, #164b8a);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            background: var(--bg);
+            color: var(--text);
         }
 
-        .login-container {
-            width: 100%;
-            max-width: 1050px;
-            min-height: 620px;
-            background: #ffffff;
-            border-radius: 20px;
-            overflow: hidden;
-            display: flex;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
-        }
+        /* ================= SIDEBAR ================= */
 
-        /* LEFT SIDE */
-        .login-left {
-            width: 50%;
-            background: linear-gradient(150deg, #0b1f3a, #1769d1);
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: var(--primary);
             color: white;
-            padding: 55px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            padding: 24px 16px;
+            z-index: 10;
         }
 
         .logo {
-            width: 70px;
-            height: 70px;
-            border-radius: 16px;
-            background: white;
-            color: #1769d1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 25px;
-        }
-
-        .login-left h1 {
-            font-size: 38px;
-            margin-bottom: 12px;
-        }
-
-        .login-left h2 {
-            font-size: 20px;
-            font-weight: 400;
-            line-height: 1.5;
-            margin-bottom: 25px;
-        }
-
-        .login-left p {
-            color: #d8e7ff;
-            line-height: 1.7;
-            font-size: 15px;
-            max-width: 430px;
-        }
-
-        .features {
-            margin-top: 35px;
-        }
-
-        .feature {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin: 15px 0;
-            color: #eaf2ff;
+            padding: 0 10px 28px;
+            border-bottom: 1px solid rgba(255,255,255,.15);
         }
 
-        .feature-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* RIGHT SIDE */
-        .login-right {
-            width: 50%;
-            padding: 55px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .login-right h2 {
-            font-size: 30px;
-            color: #102a50;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            color: #718096;
-            margin-bottom: 32px;
-            font-size: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            color: #243b5a;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        input,
-        select {
-            width: 100%;
-            height: 50px;
-            border: 1px solid #d7deea;
-            border-radius: 10px;
-            padding: 0 15px;
-            font-size: 14px;
-            outline: none;
-            background: #f9fbff;
-            transition: 0.2s;
-        }
-
-        input:focus,
-        select:focus {
-            border-color: #2673dd;
-            box-shadow: 0 0 0 3px rgba(38, 115, 221, 0.12);
+        .logo-icon {
+            width: 42px;
+            height: 42px;
             background: white;
+            color: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
         }
 
-        .password-wrapper {
-            position: relative;
+        .logo h2 {
+            font-size: 18px;
         }
 
-        .password-wrapper input {
-            padding-right: 60px;
+        .logo p {
+            font-size: 11px;
+            opacity: .7;
+            margin-top: 3px;
         }
 
-        .show-password {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            border: none;
-            background: none;
-            color: #2673dd;
+        .menu {
+            margin-top: 25px;
+        }
+
+        .menu-title {
+            font-size: 11px;
+            opacity: .5;
+            text-transform: uppercase;
+            margin: 20px 12px 8px;
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            padding: 12px 14px;
+            margin: 4px 0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
             cursor: pointer;
-            font-size: 13px;
+            color: #dbe5f5;
+            transition: .2s;
+            font-size: 14px;
         }
 
-        .options {
+        .menu-item:hover,
+        .menu-item.active {
+            background: rgba(255,255,255,.13);
+            color: white;
+        }
+
+        .menu-item span {
+            width: 22px;
+            text-align: center;
+        }
+
+        .sidebar-bottom {
+            position: absolute;
+            bottom: 20px;
+            left: 16px;
+            right: 16px;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 72px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+        }
+
+        .page-title h1 {
+            font-size: 21px;
+        }
+
+        .page-title p {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .search {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 14px;
+            width: 210px;
+            outline: none;
+        }
+
+        .notification {
+            position: relative;
+            font-size: 21px;
+            cursor: pointer;
+        }
+
+        .notification::after {
+            content: "";
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            background: var(--danger);
+            border-radius: 50%;
+            top: 0;
+            right: -2px;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #dce6ff;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .profile small {
+            color: var(--muted);
+        }
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding: 30px;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h2 {
+            font-size: 25px;
+        }
+
+        .welcome p {
+            color: var(--muted);
+            margin-top: 6px;
+        }
+
+        /* ================= CARDS ================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .stat-card {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 5px 0 25px;
-            font-size: 13px;
         }
 
-        .remember {
+        .stat-card h3 {
+            font-size: 27px;
+            margin: 7px 0;
+        }
+
+        .stat-card p {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: var(--primary-light);
             display: flex;
             align-items: center;
-            gap: 7px;
-            color: #66758a;
+            justify-content: center;
+            font-size: 22px;
         }
 
-        .remember input {
-            width: 15px;
-            height: 15px;
+        /* ================= GRID ================= */
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
         }
 
-        .forgot {
-            color: #1769d1;
-            text-decoration: none;
-            font-weight: 600;
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
-        .login-btn {
-            width: 100%;
-            height: 52px;
-            border: none;
-            border-radius: 10px;
-            background: #1769d1;
-            color: white;
+        .card-header h3 {
             font-size: 16px;
-            font-weight: 600;
+        }
+
+        .card-header a {
+            color: var(--accent);
+            font-size: 13px;
             cursor: pointer;
-            transition: 0.2s;
         }
 
-        .login-btn:hover {
-            background: #0e55b0;
-            transform: translateY(-1px);
+        /* ================= CHART ================= */
+
+        .chart {
+            height: 240px;
+            display: flex;
+            align-items: end;
+            justify-content: space-around;
+            gap: 15px;
+            padding: 20px 10px 0;
         }
 
-        .error {
-            display: none;
-            color: #d93025;
-            background: #fff1f0;
-            border: 1px solid #ffc9c5;
-            padding: 10px 12px;
-            border-radius: 8px;
-            margin-bottom: 18px;
+        .bar-wrapper {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: end;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bar {
+            width: 35px;
+            border-radius: 7px 7px 0 0;
+            background: var(--accent);
+        }
+
+        .bar-label {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        /* ================= ACTIVITY ================= */
+
+        .activity {
+            display: flex;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .activity:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 35px;
+            height: 35px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .activity p {
             font-size: 13px;
         }
 
-        .demo-info {
-            margin-top: 25px;
+        .activity small {
+            color: var(--muted);
+        }
+
+        /* ================= PAGE ================= */
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .page-heading h2 {
+            font-size: 24px;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        select,
+        input {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            background: white;
+            color: var(--text);
+            outline: none;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        th {
+            background: #f8fafc;
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .warning {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .danger {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .blue {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        /* ================= GRADE SHEET ================= */
+
+        .grade-sheet {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 35px;
+            border-radius: 12px;
+        }
+
+        .college-header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .college-header h2 {
+            color: var(--primary);
+            margin-bottom: 7px;
+        }
+
+        .student-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .info-box {
+            background: #f8fafc;
             padding: 14px;
-            background: #f2f7ff;
-            border-radius: 10px;
-            font-size: 12px;
-            color: #5b6b82;
-            text-align: center;
+            border-radius: 8px;
         }
 
-        .footer {
-            text-align: center;
-            color: #9aa7b8;
-            font-size: 12px;
-            margin-top: 25px;
+        .info-box small {
+            color: var(--muted);
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 800px) {
-            .login-container {
-                flex-direction: column;
+        .info-box strong {
+            display: block;
+            margin-top: 5px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media(max-width: 1000px) {
+            .sidebar {
+                width: 210px;
             }
 
-            .login-left,
-            .login-right {
+            .main {
+                margin-left: 210px;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(max-width: 700px) {
+            .sidebar {
+                position: relative;
                 width: 100%;
+                height: auto;
             }
 
-            .login-left {
-                padding: 35px;
+            .sidebar-bottom {
+                position: relative;
+                left: auto;
+                right: auto;
+                bottom: auto;
             }
 
-            .login-right {
-                padding: 35px;
+            .main {
+                margin-left: 0;
             }
 
-            .features {
+            .topbar {
+                padding: 15px;
+                height: auto;
+                gap: 10px;
+            }
+
+            .search {
                 display: none;
             }
-        }
 
-        @media (max-width: 500px) {
-            .login-left h1 {
-                font-size: 30px;
+            .content {
+                padding: 18px;
             }
 
-            .login-right h2 {
-                font-size: 25px;
+            .stats {
+                grid-template-columns: 1fr;
             }
 
-            .login-left,
-            .login-right {
-                padding: 28px;
+            .student-info {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                min-width: 700px;
+            }
+
+            .table-card {
+                overflow-x: auto;
             }
         }
     </style>
@@ -287,260 +583,1090 @@
 
 <body>
 
-<div class="login-container">
+<!-- ================= SIDEBAR ================= -->
 
-    <!-- LEFT SECTION -->
-    <div class="login-left">
+<aside class="sidebar">
 
-        <div class="logo">IM</div>
+    <div class="logo">
+        <div class="logo-icon">IM</div>
+        <div>
+            <h2>IMCGSS</h2>
+            <p>Academic Management</p>
+        </div>
+    </div>
 
-        <h1>IMCGSS</h1>
+    <div class="menu">
 
-        <h2>
-            Internal Marks Consolidation
-            & Grade Sheet System
-        </h2>
+        <div class="menu-title">Main</div>
 
-        <p>
-            A centralized academic management system for
-            managing internal marks, validation, consolidation
-            and grade sheet generation.
-        </p>
+        <div class="menu-item active" onclick="showPage('dashboard', this)">
+            <span>⌂</span> Dashboard
+        </div>
 
-        <div class="features">
+        <div class="menu-item" onclick="showPage('students', this)">
+            <span>👨‍🎓</span> Students
+        </div>
 
-            <div class="feature">
-                <div class="feature-icon">✓</div>
-                <span>Secure Academic Records</span>
-            </div>
+        <div class="menu-item" onclick="showPage('subjects', this)">
+            <span>📚</span> Subjects
+        </div>
 
-            <div class="feature">
-                <div class="feature-icon">✓</div>
-                <span>Internal Marks Management</span>
-            </div>
+        <div class="menu-title">Marks Management</div>
 
-            <div class="feature">
-                <div class="feature-icon">✓</div>
-                <span>Grade Sheet Generation</span>
-            </div>
+        <div class="menu-item" onclick="showPage('marks', this)">
+            <span>📝</span> Marks Entry
+        </div>
 
+        <div class="menu-item" onclick="showPage('validation', this)">
+            <span>✓</span> Marks Validation
+        </div>
+
+        <div class="menu-item" onclick="showPage('consolidation', this)">
+            <span>▦</span> Consolidation
+        </div>
+
+        <div class="menu-item" onclick="showPage('grades', this)">
+            <span>🎓</span> Grade Sheets
+        </div>
+
+        <div class="menu-title">Reports</div>
+
+        <div class="menu-item" onclick="showPage('reports', this)">
+            <span>📊</span> Reports
+        </div>
+
+        <div class="menu-item" onclick="showPage('users', this)">
+            <span>👥</span> Users
         </div>
 
     </div>
 
+    <div class="sidebar-bottom">
 
-    <!-- RIGHT SECTION -->
-    <div class="login-right">
-
-        <h2>Welcome Back</h2>
-
-        <p class="subtitle">
-            Sign in to access the IMCGSS dashboard
-        </p>
-
-        <div id="errorMessage" class="error">
-            Please fill in all required fields.
+        <div class="menu-item" onclick="showPage('settings', this)">
+            <span>⚙</span> Settings
         </div>
 
-        <form id="loginForm">
+        <div class="menu-item">
+            <span>🚪</span> Logout
+        </div>
 
-            <!-- USERNAME -->
-            <div class="form-group">
+    </div>
 
-                <label for="username">
-                    User ID / Username
-                </label>
+</aside>
 
-                <input
-                    type="text"
-                    id="username"
-                    placeholder="Enter your user ID"
-                >
 
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+    <header class="topbar">
+
+        <div class="page-title">
+            <h1 id="topTitle">Dashboard</h1>
+            <p>Internal Marks Consolidation & Grade Sheet System</p>
+        </div>
+
+        <div class="top-actions">
+
+            <input class="search" placeholder="Search anything...">
+
+            <div class="notification">🔔</div>
+
+            <div class="profile">
+                <div class="avatar">DC</div>
+                <div>
+                    <strong>Diya C K</strong><br>
+                    <small>Administrator</small>
+                </div>
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <section class="content">
+
+
+        <!-- ================= DASHBOARD ================= -->
+
+        <div class="page active" id="dashboard">
+
+            <div class="welcome">
+                <h2>Welcome back, Diya 👋</h2>
+                <p>Here's an overview of your academic assessment system.</p>
             </div>
 
 
-            <!-- PASSWORD -->
-            <div class="form-group">
+            <div class="stats">
 
-                <label for="password">
-                    Password
-                </label>
+                <div class="card stat-card">
+                    <div>
+                        <p>Total Students</p>
+                        <h3 id="totalStudentsCount">0</h3>
+                        <p>Across 4 batches</p>
+                    </div>
+                    <div class="stat-icon">👨‍🎓</div>
+                </div>
 
-                <div class="password-wrapper">
+                <div class="card stat-card">
+                    <div>
+                        <p>Total Subjects</p>
+                        <h3>32</h3>
+                        <p>Current semester</p>
+                    </div>
+                    <div class="stat-icon">📚</div>
+                </div>
 
-                    <input
-                        type="password"
-                        id="password"
-                        placeholder="Enter your password"
-                    >
+                <div class="card stat-card">
+                    <div>
+                        <p>Marks Submitted</p>
+                        <h3>86%</h3>
+                        <p>+8% this week</p>
+                    </div>
+                    <div class="stat-icon">✓</div>
+                </div>
 
-                    <button
-                        type="button"
-                        class="show-password"
-                        onclick="togglePassword()">
-                        Show
-                    </button>
-
+                <div class="card stat-card">
+                    <div>
+                        <p>Pending Review</p>
+                        <h3>14</h3>
+                        <p>Needs attention</p>
+                    </div>
+                    <div class="stat-icon">⚠</div>
                 </div>
 
             </div>
 
 
-            <!-- ROLE -->
-            <div class="form-group">
+            <div class="dashboard-grid">
 
-                <label for="role">
-                    Login As
-                </label>
+                <div class="card">
 
-                <select id="role">
+                    <div class="card-header">
+                        <h3>Subject-wise Average Marks</h3>
+                        <a>View Report →</a>
+                    </div>
 
-                    <option value="">
-                        Select your role
-                    </option>
+                    <div class="chart">
 
-                    <option value="Administrator">
-                        Administrator
-                    </option>
+                        <div class="bar-wrapper">
+                            <div class="bar" style="height:75%"></div>
+                            <span class="bar-label">DBMS</span>
+                        </div>
 
-                    <option value="Faculty">
-                        Faculty
-                    </option>
+                        <div class="bar-wrapper">
+                            <div class="bar" style="height:60%"></div>
+                            <span class="bar-label">OS</span>
+                        </div>
 
-                    <option value="Coordinator">
-                        Coordinator
-                    </option>
+                        <div class="bar-wrapper">
+                            <div class="bar" style="height:82%"></div>
+                            <span class="bar-label">SE</span>
+                        </div>
 
-                    <option value="HOD">
-                        HOD / Reviewer
-                    </option>
+                        <div class="bar-wrapper">
+                            <div class="bar" style="height:68%"></div>
+                            <span class="bar-label">CN</span>
+                        </div>
 
-                    <option value="Student">
-                        Student
-                    </option>
+                        <div class="bar-wrapper">
+                            <div class="bar" style="height:90%"></div>
+                            <span class="bar-label">AI</span>
+                        </div>
 
+                        <div class="bar-wrapper">
+                            <div class="bar" style="height:72%"></div>
+                            <span class="bar-label">Maths</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-header">
+                        <h3>Recent Activity</h3>
+                        <a>View all</a>
+                    </div>
+
+                    <div class="activity">
+                        <div class="activity-icon">✓</div>
+                        <div>
+                            <p>Marks submitted for DBMS</p>
+                            <small>10 minutes ago</small>
+                        </div>
+                    </div>
+
+                    <div class="activity">
+                        <div class="activity-icon">📝</div>
+                        <div>
+                            <p>New marks entry created</p>
+                            <small>35 minutes ago</small>
+                        </div>
+                    </div>
+
+                    <div class="activity">
+                        <div class="activity-icon">📄</div>
+                        <div>
+                            <p>Grade sheet generated</p>
+                            <small>1 hour ago</small>
+                        </div>
+                    </div>
+
+                    <div class="activity">
+                        <div class="activity-icon">⚠</div>
+                        <div>
+                            <p>3 missing marks detected</p>
+                            <small>2 hours ago</small>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= STUDENTS ================= -->
+
+        <div class="page" id="students">
+
+            <div class="page-heading">
+                <div>
+                    <h2>Student Management</h2>
+                    <p style="color:#64748b;margin-top:5px">
+                        Manage student academic records
+                    </p>
+                </div>
+
+                <button class="btn btn-primary">+ Add Student</button>
+            </div>
+
+            <div class="filters">
+
+                <input placeholder="Search by name or roll number">
+
+                <select>
+                    <option>All Departments</option>
+                    <option>Computer Science</option>
+                    <option>Electronics</option>
+                </select>
+
+                <select>
+                    <option>All Semesters</option>
+                    <option>S5</option>
+                    <option>S6</option>
+                </select>
+
+                <select>
+                    <option>All Batches</option>
+                    <option>2023-2027</option>
+                    <option>2024-2028</option>
                 </select>
 
             </div>
 
+            <div class="table-card">
 
-            <!-- OPTIONS -->
-            <div class="options">
+                <table>
 
-                <label class="remember">
-                    <input type="checkbox">
-                    Remember me
-                </label>
+                    <thead>
+                        <tr>
+                            <th>Roll No</th>
+                            <th>Student Name</th>
+                            <th>Department</th>
+                            <th>Semester</th>
+                            <th>Batch</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
 
-                <a href="#" class="forgot">
-                    Forgot Password?
-                </a>
+                    <tbody>
+
+                        <tr>
+                            <td>CS036</td>
+                            <td>Diya C K</td>
+                            <td>Computer Science</td>
+                            <td>S5</td>
+                            <td>2023-2027</td>
+                            <td><span class="badge success">Active</span></td>
+                            <td>•••</td>
+                        </tr>
+
+                        <tr>
+                            <td>CS042</td>
+                            <td>Fathima Ameena</td>
+                            <td>Computer Science</td>
+                            <td>S5</td>
+                            <td>2023-2027</td>
+                            <td><span class="badge success">Active</span></td>
+                            <td>•••</td>
+                        </tr>
+
+                        <tr>
+                            <td>CS014</td>
+                            <td>Aneena Febin</td>
+                            <td>Computer Science</td>
+                            <td>S5</td>
+                            <td>2023-2027</td>
+                            <td><span class="badge success">Active</span></td>
+                            <td>•••</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
 
             </div>
 
-
-            <!-- LOGIN -->
-            <button
-                type="submit"
-                class="login-btn">
-                Sign In
-            </button>
-
-        </form>
-
-
-        <div class="demo-info">
-            Demo mode: Enter any username and password
-            with a selected role.
         </div>
 
-        <div class="footer">
-            © 2026 IMCGSS | Academic Administration System
+
+        <!-- ================= SUBJECTS ================= -->
+
+        <div class="page" id="subjects">
+
+            <div class="page-heading">
+
+                <div>
+                    <h2>Subject Management</h2>
+                    <p style="color:#64748b;margin-top:5px">
+                        Manage subjects and assessment components
+                    </p>
+                </div>
+
+                <button class="btn btn-primary">+ Add Subject</button>
+
+            </div>
+
+            <div class="filters">
+
+                <input placeholder="Search subject">
+
+                <select>
+                    <option>All Departments</option>
+                    <option>Computer Science</option>
+                </select>
+
+                <select>
+                    <option>All Semesters</option>
+                    <option>S5</option>
+                    <option>S6</option>
+                </select>
+
+            </div>
+
+            <div class="table-card">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Subject</th>
+                            <th>Credits</th>
+                            <th>Semester</th>
+                            <th>Assessment</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>CS501</td>
+                            <td>Database Management Systems</td>
+                            <td>4</td>
+                            <td>S5</td>
+                            <td>Exam · Assignment · Attendance</td>
+                            <td><span class="badge success">Active</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>CS502</td>
+                            <td>Operating Systems</td>
+                            <td>4</td>
+                            <td>S5</td>
+                            <td>Exam · Assignment · Seminar</td>
+                            <td><span class="badge success">Active</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>CS503</td>
+                            <td>Computer Networks</td>
+                            <td>3</td>
+                            <td>S5</td>
+                            <td>Exam · Assignment · Attendance</td>
+                            <td><span class="badge success">Active</span></td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
         </div>
 
-    </div>
 
-</div>
+        <!-- ================= MARKS ================= -->
+
+        <div class="page" id="marks">
+
+            <div class="page-heading">
+                <div>
+                    <h2>Marks Entry</h2>
+                    <p style="color:#64748b;margin-top:5px">
+                        Enter internal assessment marks
+                    </p>
+                </div>
+
+                <button class="btn btn-primary">Save Marks</button>
+            </div>
+
+            <div class="filters">
+
+                <select>
+                    <option>2026-27</option>
+                </select>
+
+                <select>
+                    <option>Semester 5</option>
+                </select>
+
+                <select>
+                    <option>Computer Science</option>
+                </select>
+
+                <select>
+                    <option>CS501 - DBMS</option>
+                </select>
+
+                <select>
+                    <option>Internal Examination</option>
+                    <option>Assignment</option>
+                    <option>Attendance</option>
+                    <option>Seminar</option>
+                </select>
+
+            </div>
+
+            <div class="table-card">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Roll No</th>
+                            <th>Student Name</th>
+                            <th>Maximum</th>
+                            <th>Marks Obtained</th>
+                            <th>Validation</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>CS036</td>
+                            <td>Diya C K</td>
+                            <td>30</td>
+                            <td><input type="number" value="27" style="width:90px"></td>
+                            <td><span class="badge success">Valid</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>CS042</td>
+                            <td>Fathima Ameena</td>
+                            <td>30</td>
+                            <td><input type="number" value="25" style="width:90px"></td>
+                            <td><span class="badge success">Valid</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>CS014</td>
+                            <td>Aneena Febin</td>
+                            <td>30</td>
+                            <td><input type="number" value="28" style="width:90px"></td>
+                            <td><span class="badge success">Valid</span></td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= VALIDATION ================= -->
+
+        <div class="page" id="validation">
+
+            <div class="page-heading">
+
+                <div>
+                    <h2>Marks Validation</h2>
+                    <p style="color:#64748b;margin-top:5px">
+                        Review marks before consolidation
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="stats">
+
+                <div class="card stat-card">
+                    <div>
+                        <p>Total Records</p>
+                        <h3>1,248</h3>
+                    </div>
+                    <div class="stat-icon">📋</div>
+                </div>
+
+                <div class="card stat-card">
+                    <div>
+                        <p>Valid</p>
+                        <h3>1,198</h3>
+                    </div>
+                    <div class="stat-icon">✓</div>
+                </div>
+
+                <div class="card stat-card">
+                    <div>
+                        <p>Missing</p>
+                        <h3>32</h3>
+                    </div>
+                    <div class="stat-icon">⚠</div>
+                </div>
+
+                <div class="card stat-card">
+                    <div>
+                        <p>Invalid</p>
+                        <h3>18</h3>
+                    </div>
+                    <div class="stat-icon">!</div>
+                </div>
+
+            </div>
+
+            <div class="table-card">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Subject</th>
+                            <th>Component</th>
+                            <th>Marks</th>
+                            <th>Status</th>
+                            <th>Issue</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Diya C K</td>
+                            <td>DBMS</td>
+                            <td>Internal Exam</td>
+                            <td>27 / 30</td>
+                            <td><span class="badge success">Valid</span></td>
+                            <td>—</td>
+                        </tr>
+
+                        <tr>
+                            <td>Fathima Ameena</td>
+                            <td>OS</td>
+                            <td>Assignment</td>
+                            <td>—</td>
+                            <td><span class="badge warning">Missing</span></td>
+                            <td>Marks not entered</td>
+                        </tr>
+
+                        <tr>
+                            <td>Aneena Febin</td>
+                            <td>CN</td>
+                            <td>Internal Exam</td>
+                            <td>35 / 30</td>
+                            <td><span class="badge danger">Invalid</span></td>
+                            <td>Exceeds maximum</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= CONSOLIDATION ================= -->
+
+        <div class="page" id="consolidation">
+
+            <div class="page-heading">
+
+                <div>
+                    <h2>Marks Consolidation</h2>
+                    <p style="color:#64748b;margin-top:5px">
+                        Consolidated subject-wise internal marks
+                    </p>
+                </div>
+
+                <button class="btn btn-primary">
+                    Consolidate Marks
+                </button>
+
+            </div>
+
+            <div class="filters">
+
+                <select>
+                    <option>2026-27</option>
+                </select>
+
+                <select>
+                    <option>Semester 5</option>
+                </select>
+
+                <select>
+                    <option>Computer Science</option>
+                </select>
+
+                <select>
+                    <option>2023-2027</option>
+                </select>
+
+            </div>
+
+            <div class="table-card">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Roll No</th>
+                            <th>Student</th>
+                            <th>DBMS</th>
+                            <th>OS</th>
+                            <th>CN</th>
+                            <th>SE</th>
+                            <th>Total</th>
+                            <th>Grade</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>CS036</td>
+                            <td>Diya C K</td>
+                            <td>27</td>
+                            <td>26</td>
+                            <td>28</td>
+                            <td>25</td>
+                            <td>106</td>
+                            <td><span class="badge blue">A</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>CS042</td>
+                            <td>Fathima Ameena</td>
+                            <td>25</td>
+                            <td>24</td>
+                            <td>26</td>
+                            <td>27</td>
+                            <td>102</td>
+                            <td><span class="badge blue">A</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>CS014</td>
+                            <td>Aneena Febin</td>
+                            <td>28</td>
+                            <td>27</td>
+                            <td>29</td>
+                            <td>26</td>
+                            <td>110</td>
+                            <td><span class="badge success">A+</span></td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= GRADE SHEET ================= -->
+
+        <div class="page" id="grades">
+
+            <div class="page-heading">
+
+                <div>
+                    <h2>Grade Sheet</h2>
+                    <p style="color:#64748b;margin-top:5px">
+                        Student internal assessment grade sheet
+                    </p>
+                </div>
+
+                <div>
+                    <button class="btn btn-outline">Print</button>
+                    <button class="btn btn-primary">Download PDF</button>
+                </div>
+
+            </div>
+
+            <div class="grade-sheet">
+
+                <div class="college-header">
+
+                    <h2>COLLEGE OF ENGINEERING</h2>
+
+                    <p>
+                        Department of Computer Science & Engineering
+                    </p>
+
+                    <strong>
+                        INTERNAL ASSESSMENT GRADE SHEET
+                    </strong>
+
+                </div>
+
+
+                <div class="student-info">
+
+                    <div class="info-box">
+                        <small>Student Name</small>
+                        <strong>Diya C K</strong>
+                    </div>
+
+                    <div class="info-box">
+                        <small>Roll Number</small>
+                        <strong>CS036</strong>
+                    </div>
+
+                    <div class="info-box">
+                        <small>Semester</small>
+                        <strong>S5</strong>
+                    </div>
+
+                    <div class="info-box">
+                        <small>Academic Year</small>
+                        <strong>2026-27</strong>
+                    </div>
+
+                    <div class="info-box">
+                        <small>Department</small>
+                        <strong>Computer Science</strong>
+                    </div>
+
+                    <div class="info-box">
+                        <small>Batch</small>
+                        <strong>2023-2027</strong>
+                    </div>
+
+                </div>
+
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Code</th>
+                            <th>Subject</th>
+                            <th>Internal Marks</th>
+                            <th>Grade</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>CS501</td>
+                            <td>Database Management Systems</td>
+                            <td>27 / 30</td>
+                            <td>A</td>
+                        </tr>
+
+                        <tr>
+                            <td>CS502</td>
+                            <td>Operating Systems</td>
+                            <td>26 / 30</td>
+                            <td>A</td>
+                        </tr>
+
+                        <tr>
+                            <td>CS503</td>
+                            <td>Computer Networks</td>
+                            <td>28 / 30</td>
+                            <td>A+</td>
+                        </tr>
+
+                        <tr>
+                            <td>CS504</td>
+                            <td>Software Engineering</td>
+                            <td>25 / 30</td>
+                            <td>A</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+                <br>
+
+                <strong>Overall Internal Performance: Excellent</strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= REPORTS ================= -->
+
+        <div class="page" id="reports">
+
+            <div class="page-heading">
+
+                <div>
+                    <h2>Reports</h2>
+                    <p style="color:#64748b;margin-top:5px">
+                        Academic assessment reports
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="stats">
+
+                <div class="card">
+                    <div class="stat-icon">📊</div>
+                    <h3 style="margin-top:15px">Student Performance</h3>
+                    <p style="color:#64748b;margin-top:7px">
+                        View individual student performance.
+                    </p>
+                    <button class="btn btn-outline" style="margin-top:15px">
+                        View Report
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="stat-icon">📚</div>
+                    <h3 style="margin-top:15px">Subject-wise Report</h3>
+                    <p style="color:#64748b;margin-top:7px">
+                        Analyze subject performance.
+                    </p>
+                    <button class="btn btn-outline" style="margin-top:15px">
+                        View Report
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="stat-icon">📋</div>
+                    <h3 style="margin-top:15px">Missing Marks</h3>
+                    <p style="color:#64748b;margin-top:7px">
+                        Identify incomplete records.
+                    </p>
+                    <button class="btn btn-outline" style="margin-top:15px">
+                        View Report
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="stat-icon">🎓</div>
+                    <h3 style="margin-top:15px">Grade Report</h3>
+                    <p style="color:#64748b;margin-top:7px">
+                        View consolidated grades.
+                    </p>
+                    <button class="btn btn-outline" style="margin-top:15px">
+                        View Report
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= USERS ================= -->
+
+        <div class="page" id="users">
+
+            <div class="page-heading">
+
+                <div>
+                    <h2>User Management</h2>
+                    <p style="color:#64748b;margin-top:5px">
+                        Manage system users and roles
+                    </p>
+                </div>
+
+                <button class="btn btn-primary" onclick="window.location.href='users.html'">
+    + Add User
+</button>
+
+            </div>
+
+            <div class="table-card">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Diya C K</td>
+                            <td>diya@example.com</td>
+                            <td>Administrator</td>
+                            <td>CSE</td>
+                            <td><span class="badge success">Active</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>Faculty User</td>
+                            <td>faculty@example.com</td>
+                            <td>Faculty</td>
+                            <td>CSE</td>
+                            <td><span class="badge success">Active</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>HOD User</td>
+                            <td>hod@example.com</td>
+                            <td>HOD / Reviewer</td>
+                            <td>CSE</td>
+                            <td><span class="badge success">Active</span></td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= SETTINGS ================= -->
+
+        <div class="page" id="settings">
+
+            <div class="page-heading">
+
+                <div>
+                    <h2>Settings</h2>
+                    <p style="color:#64748b;margin-top:5px">
+                        System and account preferences
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="card" style="max-width:800px">
+
+                <h3>Account Settings</h3>
+
+                <br>
+
+                <label>Name</label>
+                <input value="Diya C K" style="width:100%;margin:7px 0 15px">
+
+                <label>Email</label>
+                <input value="diya@example.com" style="width:100%;margin:7px 0 15px">
+
+                <label>Role</label>
+                <select style="width:100%;margin:7px 0 20px">
+                    <option>Administrator</option>
+                </select>
+
+                <button class="btn btn-primary">
+                    Save Changes
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
 
 
 <script>
 
-    // Show / Hide password
-    function togglePassword() {
+    function showPage(pageId, element) {
 
-        const password =
-            document.getElementById("password");
-
-        const button =
-            document.querySelector(".show-password");
-
-        if (password.type === "password") {
-
-            password.type = "text";
-            button.textContent = "Hide";
-
-        } else {
-
-            password.type = "password";
-            button.textContent = "Show";
-
-        }
-
-    }
-
-
-    // Login validation
-    document
-        .getElementById("loginForm")
-        .addEventListener("submit", function(event) {
-
-            event.preventDefault();
-
-            const username =
-                document.getElementById("username").value.trim();
-
-            const password =
-                document.getElementById("password").value.trim();
-
-            const role =
-                document.getElementById("role").value;
-
-            const error =
-                document.getElementById("errorMessage");
-
-
-            if (username === "" ||
-                password === "" ||
-                role === "") {
-
-                error.style.display = "block";
-
-                error.textContent =
-                    "Please enter your User ID, Password and select your role.";
-
-                return;
-            }
-
-
-            // Store temporary login information
-            localStorage.setItem(
-                "imcgss_username",
-                username
-            );
-
-            localStorage.setItem(
-                "imcgss_role",
-                role
-            );
-
-            
-            error.style.display = "none";
-
-// Go to existing dashboard
-window.location.href = "index.html";
+        document.querySelectorAll(".page").forEach(page => {
+            page.classList.remove("active");
         });
 
+        document.getElementById(pageId).classList.add("active");
+
+        document.querySelectorAll(".menu-item").forEach(item => {
+            item.classList.remove("active");
+        });
+
+        if (element) {
+            element.classList.add("active");
+        }
+
+        const titles = {
+            dashboard: "Dashboard",
+            students: "Student Management",
+            subjects: "Subject Management",
+            marks: "Marks Entry",
+            validation: "Marks Validation",
+            consolidation: "Marks Consolidation",
+            grades: "Grade Sheets",
+            reports: "Reports",
+            users: "User Management",
+            settings: "Settings"
+        };
+
+        document.getElementById("topTitle").innerText =
+            titles[pageId] || "IMCGSS";
+    }
+function updateStudentCount() {
+
+    const students =
+        JSON.parse(
+            localStorage.getItem("imcgss_students")
+        ) || [];
+
+    const countElement =
+        document.getElementById("totalStudentsCount");
+
+    if (countElement) {
+        countElement.innerText = students.length;
+    }
+}
+
+updateStudentCount();
 </script>
 
 </body>
