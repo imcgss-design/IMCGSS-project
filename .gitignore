@@ -1,0 +1,10 @@
+target/
+**/target/
+*.class
+.mvn/
+.idea/
+.vscode/
+*.iml
+*.log
+.DS_Store
+Thumbs.db

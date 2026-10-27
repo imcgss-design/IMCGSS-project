@@ -1,0 +1,5318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMCGSS | Internal Marks & Grade Sheet System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        :root {
+            --primary: #243b64;
+            --primary-light: #eef3ff;
+            --accent: #4f7cff;
+            --bg: #f5f7fb;
+            --white: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --success: #16a34a;
+            --warning: #f59e0b;
+            --danger: #dc2626;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: var(--primary);
+            color: white;
+            padding: 24px 16px;
+            z-index: 10;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 10px 28px;
+            border-bottom: 1px solid rgba(255,255,255,.15);
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: white;
+            color: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+        }
+
+        .logo h2 {
+            font-size: 18px;
+        }
+
+        .logo p {
+            font-size: 11px;
+            opacity: .7;
+            margin-top: 3px;
+        }
+
+        .menu {
+            margin-top: 25px;
+        }
+
+        .menu-title {
+            font-size: 11px;
+            opacity: .5;
+            text-transform: uppercase;
+            margin: 20px 12px 8px;
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            padding: 12px 14px;
+            margin: 4px 0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            color: #dbe5f5;
+            transition: .2s;
+            font-size: 14px;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: rgba(255,255,255,.13);
+            color: white;
+        }
+
+        .menu-item span {
+            width: 22px;
+            text-align: center;
+        }
+
+        .sidebar-bottom {
+            position: absolute;
+            bottom: 20px;
+            left: 16px;
+            right: 16px;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 72px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+        }
+
+        .page-title h1 {
+            font-size: 21px;
+        }
+
+        .page-title p {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .search {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 14px;
+            width: 210px;
+            outline: none;
+        }
+
+        .notification {
+            position: relative;
+            font-size: 21px;
+            cursor: pointer;
+        }
+
+        .notification::after {
+            content: "";
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            background: var(--danger);
+            border-radius: 50%;
+            top: 0;
+            right: -2px;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #dce6ff;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .profile small {
+            color: var(--muted);
+        }
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding: 30px;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h2 {
+            font-size: 25px;
+        }
+
+        .welcome p {
+            color: var(--muted);
+            margin-top: 6px;
+        }
+
+        /* ================= CARDS ================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .stat-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-card h3 {
+            font-size: 27px;
+            margin: 7px 0;
+        }
+
+        .stat-card p {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        /* ================= GRID ================= */
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-header h3 {
+            font-size: 16px;
+        }
+
+        .card-header a {
+            color: var(--accent);
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        /* ================= CHART ================= */
+
+        .chart {
+            height: 240px;
+            display: flex;
+            align-items: end;
+            justify-content: space-around;
+            gap: 15px;
+            padding: 20px 10px 0;
+        }
+
+        .bar-wrapper {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: end;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bar {
+            width: 35px;
+            border-radius: 7px 7px 0 0;
+            background: var(--accent);
+        }
+
+        .bar-label {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        /* ================= ACTIVITY ================= */
+
+        .activity {
+            display: flex;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .activity:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 35px;
+            height: 35px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .activity p {
+            font-size: 13px;
+        }
+
+        .activity small {
+            color: var(--muted);
+        }
+
+        /* ================= PAGE ================= */
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .page-heading h2 {
+            font-size: 24px;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        select,
+        input {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            background: white;
+            color: var(--text);
+            outline: none;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        th {
+            background: #f8fafc;
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .warning {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .danger {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .blue {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        /* ================= GRADE SHEET ================= */
+
+        .grade-sheet {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 35px;
+            border-radius: 12px;
+        }
+
+        .college-header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .college-header h2 {
+            color: var(--primary);
+            margin-bottom: 7px;
+        }
+
+        .student-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .info-box {
+            background: #f8fafc;
+            padding: 14px;
+            border-radius: 8px;
+        }
+
+        .info-box small {
+            color: var(--muted);
+        }
+
+        .info-box strong {
+            display: block;
+            margin-top: 5px;
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media(max-width: 1000px) {
+            .sidebar {
+                width: 210px;
+            }
+
+            .main {
+                margin-left: 210px;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(max-width: 700px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .sidebar-bottom {
+                position: relative;
+                left: auto;
+                right: auto;
+                bottom: auto;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .topbar {
+                padding: 15px;
+                height: auto;
+                gap: 10px;
+            }
+
+            .search {
+                display: none;
+            }
+
+            .content {
+                padding: 18px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .student-info {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                min-width: 700px;
+            }
+
+            .table-card {
+                overflow-x: auto;
+            }
+        }
+    
+.grade-sheet {
+    background: #fff;
+    padding: 30px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    color: #1e293b;
+}
+
+.grade-sheet .college-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.grade-sheet .college-header h2 {
+    margin-bottom: 8px;
+}
+
+.grade-sheet .college-header strong {
+    display: block;
+    margin-top: 14px;
+}
+
+.grade-sheet .student-info {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 25px;
+}
+
+.grade-sheet .info-box {
+    padding: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+}
+
+.grade-sheet .info-box small,
+.grade-sheet .info-box strong {
+    display: block;
+}
+
+.grade-sheet .info-box small {
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.grade-sheet table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.grade-sheet th,
+.grade-sheet td {
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    text-align: left;
+}
+
+.grade-sheet th {
+    background: #f1f5f9;
+}
+
+@media (max-width: 650px) {
+    .grade-sheet .student-info {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media print {
+    body * {
+        visibility: hidden !important;
+    }
+
+    #gradeSheetContent,
+    #gradeSheetContent * {
+        visibility: visible !important;
+    }
+
+    #gradeSheetContent {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .grade-sheet .student-info {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grade-sheet tr {
+        break-inside: avoid;
+    }
+}
+body[data-theme="dark"] {
+    background: #0f172a;
+    color: #e2e8f0;
+}
+
+body[data-theme="dark"] .card,
+body[data-theme="dark"] .table-card {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-color: #334155;
+}
+
+body[data-theme="dark"] input,
+body[data-theme="dark"] select {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-color: #475569;
+}
+
+body[data-theme="dark"] p,
+body[data-theme="dark"] label {
+    color: #cbd5e1;
+}
+
+    </style>
+</head>
+
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        <div class="logo-icon">IM</div>
+        <div>
+            <h2>IMCGSS</h2>
+            <p>Academic Management</p>
+        </div>
+    </div>
+
+    <div class="menu">
+
+        <div class="menu-title">Main</div>
+
+        <div class="menu-item active" onclick="showPage('dashboard', this)">
+            <span>⌂</span> Dashboard
+        </div>
+
+        <div class="menu-item" onclick="showPage('students', this)">
+            <span>👨‍🎓</span> Students
+        </div>
+
+        <div class="menu-item" onclick="showPage('subjects', this)">
+            <span>📚</span> Subjects
+        </div>
+
+        <div class="menu-title">Marks Management</div>
+
+        <div class="menu-item" onclick="showPage('marks', this)">
+            <span>📝</span> Marks Entry
+        </div>
+
+        <div class="menu-item" onclick="showPage('validation', this)">
+            <span>✓</span> Marks Validation
+        </div>
+
+        <div class="menu-item" onclick="showPage('consolidation', this)">
+            <span>▦</span> Consolidation
+        </div>
+
+        <div class="menu-item" onclick="showPage('grades', this)">
+            <span>🎓</span> Grade Sheets
+        </div>
+
+        <div class="menu-title">Reports</div>
+
+        <div class="menu-item" onclick="showPage('reports', this)">
+            <span>📊</span> Reports
+        </div>
+
+        <div class="menu-item" onclick="showPage('users', this)">
+            <span>👥</span> Users
+        </div>
+
+    </div>
+
+    <div class="sidebar-bottom">
+
+        <div class="menu-item" onclick="showPage('settings', this)">
+            <span>⚙</span> Settings
+        </div>
+
+        <div class="menu-item">
+           <button type="button" id="logoutBtn">
+    <span>🚪</span> Logout
+</button>
+        </div>
+
+    </div>
+
+</aside>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+    <header class="topbar">
+
+    <div class="page-title">
+        <h1 id="topTitle">Dashboard</h1>
+        <p>Internal Marks Consolidation &amp; Grade Sheet System</p>
+    </div>
+
+    <div class="top-actions">
+
+        <input
+            type="search"
+            class="search"
+            id="globalSearch"
+            placeholder="Search students, subjects..."
+            aria-label="Search students and subjects"
+        >
+
+        <button
+            type="button"
+            class="notification"
+            id="notificationButton"
+            aria-label="Notifications"
+            title="Notifications"
+        >🔔</button>
+
+        <div class="profile">
+            <div class="avatar" id="profileAvatar">U</div>
+            <div>
+                <strong id="profileName">User</strong><br>
+                <small id="profileRole">Signed-in user</small>
+            </div>
+        </div>
+
+    </div>
+
+</header>
+
+
+    <section class="content">
+
+
+       <!-- ================= DASHBOARD ================= -->
+
+<div class="page active" id="dashboard">
+
+    <div class="welcome">
+        <h2 id="welcomeMessage">Welcome to IMCGSS 👋</h2>
+        <p>Here's an overview of your academic assessment system.</p>
+    </div>
+
+    <!-- DYNAMIC STATISTICS -->
+    <div class="stats">
+
+        <div class="card stat-card">
+            <div>
+                <p>Total Students</p>
+                <h3 id="totalStudentsCount">0</h3>
+                <p id="batchSummary">Across all batches</p>
+            </div>
+            <div class="stat-icon">👨‍🎓</div>
+        </div>
+
+        <div class="card stat-card">
+            <div>
+                <p>Total Subjects</p>
+                <h3 id="totalSubjectsCount">0</h3>
+                <p>Registered subjects</p>
+            </div>
+            <div class="stat-icon">📚</div>
+        </div>
+
+        <div class="card stat-card">
+            <div>
+                <p>Marks Submitted</p>
+                <h3 id="marksSubmittedCount">0%</h3>
+                <p>Based on available records</p>
+            </div>
+            <div class="stat-icon">✓</div>
+        </div>
+
+        <div class="card stat-card">
+            <div>
+                <p>Pending Review</p>
+                <h3 id="pendingReviewCount">0</h3>
+                <p>Marks awaiting review</p>
+            </div>
+            <div class="stat-icon">⚠</div>
+        </div>
+
+    </div>
+
+    <!-- DASHBOARD DETAILS -->
+    <div class="dashboard-grid">
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Subject-wise Average Marks</h3>
+            </div>
+
+            <div class="chart" id="subjectChart">
+                <p>No subject records available yet.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Recent Activity</h3>
+            </div>
+
+            <div id="recentActivity">
+                <div class="activity">
+                    <div class="activity-icon">ℹ</div>
+                    <div>
+                        <p>No recent activity yet</p>
+                        <small>Activity will appear when records are added.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+      <!-- ================= STUDENTS ================= -->
+
+<div class="page" id="students">
+
+    <div class="page-heading">
+        <div>
+            <h2>Student Management</h2>
+            <p style="color:#64748b;margin-top:5px">
+                Add, search, filter and manage student academic records.
+            </p>
+        </div>
+
+        <button class="btn btn-primary" id="addStudentBtn" type="button">
+            + Add Student
+        </button>
+    </div>
+
+    <!-- ADD STUDENT FORM -->
+    <div class="card" id="studentFormCard" style="display:none;margin-bottom:20px">
+        <h3 id="studentFormTitle">Add New Student</h3>
+
+        <form id="studentForm">
+            <div class="filters" style="margin-top:16px">
+
+                <input
+                    type="text"
+                    id="studentRoll"
+                    placeholder="Roll number"
+                    required
+                >
+
+                <input
+                    type="text"
+                    id="studentName"
+                    placeholder="Full name"
+                    required
+                >
+
+                <select id="studentDepartment" required>
+                    <option value="">Select Department</option>
+                    <option value="CSE">Computer Science & Engineering (CSE)</option>
+                    <option value="AD">Artificial Intelligence & Data Science (AD)</option>
+                    <option value="ML">Machine Learning (ML)</option>
+                    <option value="IT">Information Technology (IT)</option>
+                    <option value="EEE">Electrical & Electronics Engineering (EEE)</option>
+                    <option value="ECE">Electronics & Communication Engineering (ECE)</option>
+                    <option value="CIVIL">Civil Engineering</option>
+                    <option value="ME">Mechanical Engineering</option>
+                    <option value="CHE">Chemical Engineering</option>
+                    <option value="AIDS">Artificial Intelligence & Data Science (AIDS)</option>
+                    <option value="AIML">Artificial Intelligence & Machine Learning (AIML)</option>
+                    <option value="BIO">Biomedical Engineering</option>
+                    <option value="AUTO">Automobile Engineering</option>
+                    <option value="OTHER">Other</option>
+                </select>
+
+                <select id="studentSemester" required>
+                    <option value="">Select Semester</option>
+                    <option value="1">Semester 1</option>
+                    <option value="2">Semester 2</option>
+                    <option value="3">Semester 3</option>
+                    <option value="4">Semester 4</option>
+                    <option value="5">Semester 5</option>
+                    <option value="6">Semester 6</option>
+                    <option value="7">Semester 7</option>
+                    <option value="8">Semester 8</option>
+                </select>
+
+                <select id="studentBatch" required>
+                    <option value="">Select Batch</option>
+                </select>
+
+                <select id="studentStatus" required>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+                <button class="btn btn-primary" type="submit" id="saveStudentBtn">
+                    Save Student
+                </button>
+
+                <button class="btn" type="button" id="cancelStudentBtn">
+                    Cancel
+                </button>
+            </div>
+
+            <p id="studentFormMessage" role="status" style="margin-top:12px"></p>
+        </form>
+    </div>
+
+    <!-- SEARCH AND FILTERS -->
+    <div class="filters">
+
+        <input
+            type="search"
+            id="studentSearch"
+            placeholder="Search name or roll number..."
+            aria-label="Search students"
+        >
+
+        <select id="departmentFilter">
+            <option value="">All Departments</option>
+            <option value="CSE">CSE</option>
+            <option value="AD">AD</option>
+            <option value="ML">ML</option>
+            <option value="IT">IT</option>
+            <option value="EEE">EEE</option>
+            <option value="ECE">ECE</option>
+            <option value="CIVIL">Civil</option>
+            <option value="ME">Mechanical</option>
+            <option value="CHE">Chemical</option>
+            <option value="AIDS">AIDS</option>
+            <option value="AIML">AIML</option>
+            <option value="BIO">Biomedical</option>
+            <option value="AUTO">Automobile</option>
+            <option value="OTHER">Other</option>
+        </select>
+
+        <select id="semesterFilter">
+            <option value="">All Semesters</option>
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+            <option value="3">Semester 3</option>
+            <option value="4">Semester 4</option>
+            <option value="5">Semester 5</option>
+            <option value="6">Semester 6</option>
+            <option value="7">Semester 7</option>
+            <option value="8">Semester 8</option>
+        </select>
+
+        <select id="batchFilter">
+            <option value="">All Batches</option>
+        </select>
+
+    </div>
+
+    <!-- STUDENT TABLE -->
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Roll No</th>
+                    <th>Student Name</th>
+                    <th>Department</th>
+                    <th>Semester</th>
+                    <th>Batch</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody id="studentTableBody">
+                <tr>
+                    <td colspan="7" style="text-align:center">
+                        Loading student records...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p id="studentCountMessage" style="padding:14px"></p>
+    </div>
+
+</div>
+
+
+     <!-- ================= SUBJECTS ================= -->
+
+<div class="page" id="subjects">
+
+    <div class="page-heading">
+        <div>
+            <h2>Subject Management</h2>
+            <p style="color:#64748b;margin-top:5px">
+                Add and manage subjects, credits and assessment components.
+            </p>
+        </div>
+
+        <button class="btn btn-primary" id="addSubjectBtn" type="button">
+            + Add Subject
+        </button>
+    </div>
+
+    <!-- ADD / EDIT SUBJECT FORM -->
+    <div class="card" id="subjectFormCard"
+         style="display:none;margin-bottom:20px">
+
+        <h3 id="subjectFormTitle">Add New Subject</h3>
+
+        <form id="subjectForm">
+
+            <div class="filters" style="margin-top:16px">
+
+                <input
+                    type="text"
+                    id="subjectCode"
+                    placeholder="Subject code (e.g. CS501)"
+                    required
+                >
+
+                <input
+                    type="text"
+                    id="subjectName"
+                    placeholder="Subject name"
+                    required
+                >
+
+                <select id="subjectDepartment" required>
+                    <option value="">Select Department</option>
+                    <option value="CSE">Computer Science & Engineering (CSE)</option>
+                    <option value="AD">Artificial Intelligence & Data Science (AD)</option>
+                    <option value="ML">Machine Learning (ML)</option>
+                    <option value="IT">Information Technology (IT)</option>
+                    <option value="EEE">Electrical & Electronics Engineering (EEE)</option>
+                    <option value="ECE">Electronics & Communication Engineering (ECE)</option>
+                    <option value="CIVIL">Civil Engineering</option>
+                    <option value="ME">Mechanical Engineering</option>
+                    <option value="CHE">Chemical Engineering</option>
+                    <option value="AIDS">Artificial Intelligence & Data Science (AIDS)</option>
+                    <option value="AIML">Artificial Intelligence & Machine Learning (AIML)</option>
+                    <option value="BIO">Biomedical Engineering</option>
+                    <option value="AUTO">Automobile Engineering</option>
+                    <option value="OTHER">Other</option>
+                </select>
+
+                <select id="subjectYear" required>
+                    <option value="">Select Academic Year</option>
+                    <option value="1">Year 1</option>
+                    <option value="2">Year 2</option>
+                    <option value="3">Year 3</option>
+                    <option value="4">Year 4</option>
+                    <option value="5">Year 5</option>
+                    <option value="6">Year 6</option>
+                </select>
+
+                <select id="subjectSemester" required>
+                    <option value="">Select Semester</option>
+                    <option value="1">Semester 1</option>
+                    <option value="2">Semester 2</option>
+                    <option value="3">Semester 3</option>
+                    <option value="4">Semester 4</option>
+                    <option value="5">Semester 5</option>
+                    <option value="6">Semester 6</option>
+                    <option value="7">Semester 7</option>
+                    <option value="8">Semester 8</option>
+                </select>
+
+                <input
+                    type="number"
+                    id="subjectCredits"
+                    placeholder="Credits"
+                    min="0"
+                    max="30"
+                    step="0.5"
+                    required
+                >
+
+                <input
+                    type="text"
+                    id="subjectAssessment"
+                    placeholder="Assessment (e.g. Exam, Assignment)"
+                    required
+                >
+
+                <select id="subjectStatus" required>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+
+                <button class="btn btn-primary" type="submit" id="saveSubjectBtn">
+                    Save Subject
+                </button>
+
+                <button class="btn" type="button" id="cancelSubjectBtn">
+                    Cancel
+                </button>
+
+            </div>
+
+            <p id="subjectFormMessage" role="status" style="margin-top:12px"></p>
+
+        </form>
+    </div>
+
+    <!-- SEARCH AND FILTERS -->
+    <div class="filters">
+
+        <input
+            type="search"
+            id="subjectSearch"
+            placeholder="Search subject name or code..."
+            aria-label="Search subjects"
+        >
+
+        <select id="subjectDepartmentFilter">
+            <option value="">All Departments</option>
+            <option value="CSE">CSE</option>
+            <option value="AD">AD</option>
+            <option value="ML">ML</option>
+            <option value="IT">IT</option>
+            <option value="EEE">EEE</option>
+            <option value="ECE">ECE</option>
+            <option value="CIVIL">Civil</option>
+            <option value="ME">Mechanical</option>
+            <option value="CHE">Chemical</option>
+            <option value="AIDS">AIDS</option>
+            <option value="AIML">AIML</option>
+            <option value="BIO">Biomedical</option>
+            <option value="AUTO">Automobile</option>
+            <option value="OTHER">Other</option>
+        </select>
+
+        <select id="subjectYearFilter">
+            <option value="">All Academic Years</option>
+            <option value="1">Year 1</option>
+            <option value="2">Year 2</option>
+            <option value="3">Year 3</option>
+            <option value="4">Year 4</option>
+            <option value="5">Year 5</option>
+            <option value="6">Year 6</option>
+        </select>
+
+        <select id="subjectSemesterFilter">
+            <option value="">All Semesters</option>
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+            <option value="3">Semester 3</option>
+            <option value="4">Semester 4</option>
+            <option value="5">Semester 5</option>
+            <option value="6">Semester 6</option>
+            <option value="7">Semester 7</option>
+            <option value="8">Semester 8</option>
+        </select>
+
+    </div>
+
+    <!-- SUBJECT TABLE -->
+    <div class="table-card">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Subject Name</th>
+                    <th>Department</th>
+                    <th>Year</th>
+                    <th>Semester</th>
+                    <th>Credits</th>
+                    <th>Assessment</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody id="subjectTableBody">
+                <tr>
+                    <td colspan="9" style="text-align:center">
+                        Loading subjects...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p id="subjectCountMessage" style="padding:14px"></p>
+
+    </div>
+
+</div>
+
+
+     <!-- ================= MARKS ================= -->
+
+<div class="page" id="marks">
+
+    <div class="page-heading">
+        <div>
+            <h2>Marks Entry</h2>
+            <p style="color:#64748b;margin-top:5px">
+                Enter, validate and manage internal assessment marks.
+            </p>
+        </div>
+
+        <button class="btn btn-primary" id="saveMarksBtn" type="button">
+            Save Marks
+        </button>
+    </div>
+
+    <!-- SELECTION FILTERS -->
+
+    <div class="filters">
+
+        <select id="marksAcademicYear">
+            <option value="">Select Academic Year</option>
+        </select>
+
+        <select id="marksSemester">
+            <option value="">Select Semester</option>
+        </select>
+
+        <select id="marksDepartment">
+            <option value="">Select Department</option>
+        </select>
+
+        <select id="marksSubject">
+            <option value="">Select Subject</option>
+        </select>
+
+        <select id="marksAssessment">
+            <option value="Internal Examination">Internal Examination</option>
+            <option value="Assignment">Assignment</option>
+            <option value="Attendance">Attendance</option>
+            <option value="Seminar">Seminar</option>
+            <option value="Practical">Practical</option>
+            <option value="Project">Project</option>
+        </select>
+
+        <label>
+            Maximum Marks
+            <input
+                type="number"
+                id="maximumMarks"
+                min="1"
+                max="1000"
+                value="30"
+                required
+            >
+        </label>
+
+    </div>
+
+    <!-- SEARCH -->
+
+    <div class="filters">
+        <input
+            type="search"
+            id="marksSearch"
+            placeholder="Search by student name or roll number..."
+            aria-label="Search students for marks entry"
+        >
+    </div>
+
+    <!-- STATUS MESSAGE -->
+
+    <p id="marksMessage" role="status" style="margin:12px 0"></p>
+
+    <!-- MARKS TABLE -->
+
+    <div class="table-card">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Roll No</th>
+                    <th>Student Name</th>
+                    <th>Maximum Marks</th>
+                    <th>Marks Obtained</th>
+                    <th>Validation</th>
+                </tr>
+            </thead>
+
+            <tbody id="marksTableBody">
+                <tr>
+                    <td colspan="5" style="text-align:center;padding:20px">
+                        Select a semester, department and subject to load students.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p id="marksCount" style="padding:14px"></p>
+
+    </div>
+
+</div>
+
+
+<!-- ================= VALIDATION ================= -->
+
+<div class="page" id="validation">
+
+    <div class="page-heading">
+        <div>
+            <h2>Marks Validation</h2>
+            <p style="color:#64748b;margin-top:5px">
+                Review marks before consolidation
+            </p>
+        </div>
+
+        <button type="button" class="btn btn-primary"
+                id="refreshValidationBtn">
+            ↻ Refresh Validation
+        </button>
+    </div>
+
+    <!-- Statistics -->
+    <div class="stats">
+
+        <div class="card stat-card">
+            <div>
+                <p>Total Records</p>
+                <h3 id="validationTotal">0</h3>
+            </div>
+            <div class="stat-icon">📋</div>
+        </div>
+
+        <div class="card stat-card">
+            <div>
+                <p>Valid</p>
+                <h3 id="validationValid">0</h3>
+            </div>
+            <div class="stat-icon">✓</div>
+        </div>
+
+        <div class="card stat-card">
+            <div>
+                <p>Missing</p>
+                <h3 id="validationMissing">0</h3>
+            </div>
+            <div class="stat-icon">⚠</div>
+        </div>
+
+        <div class="card stat-card">
+            <div>
+                <p>Invalid</p>
+                <h3 id="validationInvalid">0</h3>
+            </div>
+            <div class="stat-icon">!</div>
+        </div>
+
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="table-card" style="padding:16px;margin-bottom:20px">
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+
+            <input
+                type="search"
+                id="validationSearch"
+                placeholder="Search student, subject or component..."
+                aria-label="Search validation records"
+                style="flex:1;min-width:220px;padding:10px;border:1px solid #cbd5e1;border-radius:8px"
+            >
+
+            <select
+                id="validationStatusFilter"
+                aria-label="Filter by validation status"
+                style="min-width:160px;padding:10px;border:1px solid #cbd5e1;border-radius:8px"
+            >
+                <option value="all">All statuses</option>
+                <option value="Valid">Valid</option>
+                <option value="Missing">Missing</option>
+                <option value="Invalid">Invalid</option>
+            </select>
+
+        </div>
+
+        <p id="validationMessage"
+           role="status"
+           style="margin-top:12px;color:#64748b">
+        </p>
+
+    </div>
+
+    <!-- Validation Table -->
+    <div class="table-card">
+
+        <div style="overflow-x:auto">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Subject</th>
+                        <th>Component</th>
+                        <th>Marks</th>
+                        <th>Status</th>
+                        <th>Issue</th>
+                    </tr>
+                </thead>
+
+                <tbody id="validationTableBody">
+                    <tr>
+                        <td colspan="6" style="text-align:center">
+                            Loading validation records...
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ================= CONSOLIDATION ================= -->
+
+<div class="page" id="consolidation">
+
+    <div class="page-heading">
+        <div>
+            <h2>Marks Consolidation</h2>
+            <p style="color:#64748b;margin-top:5px">
+                Consolidated subject-wise internal marks
+            </p>
+        </div>
+
+        <button type="button" class="btn btn-primary"
+                id="consolidateMarksBtn">
+            Consolidate Marks
+        </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+
+        <select id="consolidationAcademicYear"
+                aria-label="Academic year">
+            <option value="">All Academic Years</option>
+        </select>
+
+        <select id="consolidationSemester"
+                aria-label="Semester">
+            <option value="">All Semesters</option>
+        </select>
+
+        <select id="consolidationDepartment"
+                aria-label="Department">
+            <option value="">All Departments</option>
+        </select>
+
+        <select id="consolidationBatch"
+                aria-label="Batch">
+            <option value="">All Batches</option>
+        </select>
+
+    </div>
+
+    <!-- Search -->
+    <div class="table-card"
+         style="padding:16px;margin-bottom:20px">
+
+        <input type="search"
+               id="consolidationSearch"
+               placeholder="Search by student name or roll number..."
+               aria-label="Search students"
+               style="width:100%;max-width:450px;padding:10px;border:1px solid #cbd5e1;border-radius:8px">
+
+        <p id="consolidationMessage"
+           role="status"
+           style="margin-top:12px;color:#64748b">
+            Select your filters and click Consolidate Marks.
+        </p>
+
+    </div>
+
+    <!-- Results -->
+    <div class="table-card">
+
+        <div style="overflow-x:auto">
+
+            <table>
+                <thead id="consolidationTableHead">
+                    <tr>
+                        <th>Roll No</th>
+                        <th>Student</th>
+                        <th>Total</th>
+                        <th>Percentage</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+
+                <tbody id="consolidationTableBody">
+                    <tr>
+                        <td colspan="5" style="text-align:center;padding:24px">
+                            Click Consolidate Marks to generate results.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= GRADE SHEET ================= -->
+
+<div class="page" id="grades">
+
+    <div class="page-heading">
+        <div>
+            <h2>Grade Sheet</h2>
+            <p style="color:#64748b;margin-top:5px">
+                Student internal assessment grade sheet
+            </p>
+        </div>
+
+        <div>
+            <button type="button" class="btn btn-outline"
+                    id="printGradeSheetBtn">
+                Print
+            </button>
+
+            <button type="button" class="btn btn-primary"
+                    id="downloadGradeSheetBtn">
+                Download PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- Student Selection -->
+    <div class="table-card no-print"
+         style="padding:18px;margin-bottom:20px">
+
+        <label for="gradeStudentSelect"
+               style="display:block;margin-bottom:8px;font-weight:600">
+            Select Student
+        </label>
+
+        <select id="gradeStudentSelect"
+                style="width:100%;max-width:450px;padding:10px;border:1px solid #cbd5e1;border-radius:8px">
+            <option value="">Select a student</option>
+        </select>
+
+        <label for="gradeSemesterSelect"
+               style="display:block;margin:14px 0 8px;font-weight:600">
+            Semester
+        </label>
+
+        <select id="gradeSemesterSelect"
+                style="width:100%;max-width:450px;padding:10px;border:1px solid #cbd5e1;border-radius:8px">
+            <option value="">All semesters</option>
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+            <option value="3">Semester 3</option>
+            <option value="4">Semester 4</option>
+            <option value="5">Semester 5</option>
+            <option value="6">Semester 6</option>
+            <option value="7">Semester 7</option>
+            <option value="8">Semester 8</option>
+        </select>
+
+        <label for="gradeAcademicYearSelect"
+               style="display:block;margin:14px 0 8px;font-weight:600">
+            Academic Year
+        </label>
+
+        <select id="gradeAcademicYearSelect"
+                style="width:100%;max-width:450px;padding:10px;border:1px solid #cbd5e1;border-radius:8px">
+            <option value="">All academic years</option>
+        </select>
+
+        <p id="gradeSheetMessage"
+           role="status"
+           style="margin-top:12px;color:#64748b">
+            Select a student to generate their grade sheet.
+        </p>
+    </div>
+
+    <!-- Printable Grade Sheet -->
+    <div class="grade-sheet" id="gradeSheetContent">
+
+        <div class="college-header">
+            <h2 id="gradeCollegeName">COLLEGE OF ENGINEERING</h2>
+
+            <p id="gradeDepartmentHeading">
+                Department of Engineering
+            </p>
+
+            <strong>INTERNAL ASSESSMENT GRADE SHEET</strong>
+        </div>
+
+        <div class="student-info">
+
+            <div class="info-box">
+                <small>Student Name</small>
+                <strong id="gradeStudentName">—</strong>
+            </div>
+
+            <div class="info-box">
+                <small>Roll Number</small>
+                <strong id="gradeRollNumber">—</strong>
+            </div>
+
+            <div class="info-box">
+                <small>Semester</small>
+                <strong id="gradeSemester">—</strong>
+            </div>
+
+            <div class="info-box">
+                <small>Academic Year</small>
+                <strong id="gradeAcademicYear">—</strong>
+            </div>
+
+            <div class="info-box">
+                <small>Department</small>
+                <strong id="gradeDepartment">—</strong>
+            </div>
+
+            <div class="info-box">
+                <small>Batch</small>
+                <strong id="gradeBatch">—</strong>
+            </div>
+
+        </div>
+
+        <div style="overflow-x:auto">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Subject</th>
+                        <th>Internal Marks</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+
+                <tbody id="gradeSheetTableBody">
+                    <tr>
+                        <td colspan="4" style="text-align:center">
+                            Select a student to display marks.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br>
+
+        <div id="gradeSummary">
+            <strong>Overall Internal Performance: —</strong>
+        </div>
+
+    </div>
+
+</div>
+<!-- ================= REPORTS ================= -->
+
+<div class="page" id="reports">
+
+    <div class="page-heading">
+        <div>
+            <h2>Reports</h2>
+            <p style="color:#64748b;margin-top:5px">
+                Academic assessment reports
+            </p>
+        </div>
+
+        <button class="btn btn-outline" id="refreshReportsBtn">
+            ↻ Refresh Reports
+        </button>
+    </div>
+
+    <!-- Report Summary -->
+    <div class="stats">
+
+        <div class="card">
+            <div class="stat-icon">📊</div>
+            <h3 style="margin-top:15px">Student Performance</h3>
+            <p style="color:#64748b;margin-top:7px">
+                Review individual student marks and performance.
+            </p>
+            <p style="margin-top:12px">
+                Students: <strong id="reportStudentCount">0</strong>
+            </p>
+            <button class="btn btn-outline report-view-btn"
+                    data-report="performance" style="margin-top:15px">
+                View Report
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="stat-icon">📚</div>
+            <h3 style="margin-top:15px">Subject-wise Report</h3>
+            <p style="color:#64748b;margin-top:7px">
+                Review subjects and their recorded marks.
+            </p>
+            <p style="margin-top:12px">
+                Subjects: <strong id="reportSubjectCount">0</strong>
+            </p>
+            <button class="btn btn-outline report-view-btn"
+                    data-report="subjects" style="margin-top:15px">
+                View Report
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="stat-icon">📋</div>
+            <h3 style="margin-top:15px">Missing Marks</h3>
+            <p style="color:#64748b;margin-top:7px">
+                Find students and subjects without recorded marks.
+            </p>
+            <p style="margin-top:12px">
+                Missing records: <strong id="reportMissingCount">0</strong>
+            </p>
+            <button class="btn btn-outline report-view-btn"
+                    data-report="missing" style="margin-top:15px">
+                View Report
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="stat-icon">🎓</div>
+            <h3 style="margin-top:15px">Grade Report</h3>
+            <p style="color:#64748b;margin-top:7px">
+                Review grades calculated from recorded marks.
+            </p>
+            <p style="margin-top:12px">
+                Graded students: <strong id="reportGradedCount">0</strong>
+            </p>
+            <button class="btn btn-outline report-view-btn"
+                    data-report="grades" style="margin-top:15px">
+                View Report
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Report Results -->
+    <div class="card" style="margin-top:25px">
+
+        <div style="display:flex;justify-content:space-between;
+                    align-items:center;gap:12px;flex-wrap:wrap">
+
+            <div>
+                <h3 id="reportResultTitle">Report Details</h3>
+                <p id="reportResultDescription"
+                   style="color:#64748b;margin-top:5px">
+                    Select View Report to see your data.
+                </p>
+            </div>
+
+            <input type="search" id="reportSearch"
+                   placeholder="Search report..."
+                   style="padding:10px;border:1px solid #cbd5e1;
+                          border-radius:6px;max-width:260px">
+        </div>
+
+        <p id="reportsMessage" role="status"
+           style="margin-top:15px;color:#64748b"></p>
+
+        <div style="overflow-x:auto;margin-top:15px">
+            <table style="width:100%;border-collapse:collapse">
+                <thead id="reportTableHead"></thead>
+                <tbody id="reportTableBody"></tbody>
+            </table>
+        </div>
+
+        <button class="btn btn-outline" id="exportReportBtn"
+                style="margin-top:15px">
+            Export CSV
+        </button>
+
+    </div>
+
+</div>
+<!-- ================= USERS ================= -->
+
+<div class="page" id="users">
+
+    <div class="page-heading">
+        <div>
+            <h2>User Management</h2>
+            <p style="color:#64748b;margin-top:5px">
+                Manage system users and roles
+            </p>
+        </div>
+
+        <button class="btn btn-primary"
+                onclick="window.location.href='users.html'">
+            + Add User
+        </button>
+    </div>
+
+    <!-- User Statistics -->
+    <div class="stats">
+        <div class="card">
+            <div class="stat-icon">👥</div>
+            <h3 style="margin-top:12px">Total Users</h3>
+            <h2 id="totalUsersCount">0</h2>
+        </div>
+
+        <div class="card">
+            <div class="stat-icon">✅</div>
+            <h3 style="margin-top:12px">Active Users</h3>
+            <h2 id="activeUsersCount">0</h2>
+        </div>
+
+        <div class="card">
+            <div class="stat-icon">⏸️</div>
+            <h3 style="margin-top:12px">Inactive Users</h3>
+            <h2 id="inactiveUsersCount">0</h2>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="card" style="margin-top:20px">
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+
+            <input type="search"
+                   id="userSearch"
+                   placeholder="Search name or email..."
+                   style="padding:10px;border:1px solid #cbd5e1;
+                          border-radius:6px;flex:1;min-width:180px">
+
+            <select id="userRoleFilter"
+                    style="padding:10px;border:1px solid #cbd5e1;
+                           border-radius:6px">
+                <option value="">All Roles</option>
+                <option value="Administrator">Administrator</option>
+                <option value="Faculty">Faculty</option>
+                <option value="HOD / Reviewer">HOD / Reviewer</option>
+            </select>
+
+            <select id="userStatusFilter"
+                    style="padding:10px;border:1px solid #cbd5e1;
+                           border-radius:6px">
+                <option value="">All Statuses</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+            </select>
+
+        </div>
+
+        <p id="usersMessage" role="status"
+           style="margin-top:12px;color:#64748b"></p>
+
+        <!-- Users Table -->
+        <div class="table-card" style="overflow-x:auto;margin-top:15px">
+
+            <table style="width:100%">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Department</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="usersTableBody"></tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- Edit User Form -->
+    <div class="card" id="editUserCard"
+         style="display:none;margin-top:20px">
+
+        <h3>Edit User</h3>
+
+        <form id="editUserForm"
+              style="display:grid;gap:12px;margin-top:15px">
+
+            <input type="hidden" id="editUserId">
+
+            <label>
+                Full Name
+                <input id="editUserName" required
+                       style="display:block;width:100%;padding:10px;
+                              margin-top:5px">
+            </label>
+
+            <label>
+                Email
+                <input id="editUserEmail" type="email" required
+                       style="display:block;width:100%;padding:10px;
+                              margin-top:5px">
+            </label>
+
+            <label>
+                Role
+                <select id="editUserRole" required
+                        style="display:block;width:100%;padding:10px;
+                               margin-top:5px">
+                    <option value="Administrator">Administrator</option>
+                    <option value="Faculty">Faculty</option>
+                    <option value="HOD / Reviewer">HOD / Reviewer</option>
+                </select>
+            </label>
+
+            <label>
+                Department
+                <input id="editUserDepartment" required
+                       style="display:block;width:100%;padding:10px;
+                              margin-top:5px">
+            </label>
+
+            <label>
+                Status
+                <select id="editUserStatus" required
+                        style="display:block;width:100%;padding:10px;
+                               margin-top:5px">
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+            </label>
+
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button type="submit" class="btn btn-primary">
+                    Save Changes
+                </button>
+
+                <button type="button" id="cancelEditUserBtn"
+                        class="btn btn-outline">
+                    Cancel
+                </button>
+            </div>
+
+            <p id="editUserMessage" role="status"></p>
+
+        </form>
+
+    </div>
+
+</div>
+<!-- ================= SETTINGS ================= -->
+
+<div class="page" id="settings">
+
+    <div class="page-heading">
+        <div>
+            <h2>Settings</h2>
+            <p style="color:#64748b;margin-top:5px">
+                System and account preferences
+            </p>
+        </div>
+    </div>
+
+    <!-- Account Settings -->
+    <div class="card" style="max-width:800px">
+
+        <h3>Account Settings</h3>
+        <p style="color:#64748b;margin-top:6px">
+            Update your account information.
+        </p>
+
+        <form id="settingsForm" style="margin-top:20px">
+
+            <label for="settingsName">Name</label>
+            <input
+                type="text"
+                id="settingsName"
+                placeholder="Enter your name"
+                required
+                maxlength="100"
+                style="width:100%;margin:7px 0 15px;padding:11px;
+                       border:1px solid #cbd5e1;border-radius:6px">
+
+            <label for="settingsEmail">Email</label>
+            <input
+                type="email"
+                id="settingsEmail"
+                placeholder="Enter your email"
+                required
+                maxlength="150"
+                style="width:100%;margin:7px 0 15px;padding:11px;
+                       border:1px solid #cbd5e1;border-radius:6px">
+
+            <label for="settingsRole">Role</label>
+            <select
+                id="settingsRole"
+                disabled
+                style="width:100%;margin:7px 0 20px;padding:11px;
+                       border:1px solid #cbd5e1;border-radius:6px;
+                       background:#f1f5f9">
+                <option value="Administrator">Administrator</option>
+                <option value="Faculty">Faculty</option>
+                <option value="HOD / Reviewer">HOD / Reviewer</option>
+            </select>
+
+            <small style="display:block;color:#64748b;margin-top:-12px;
+                          margin-bottom:18px">
+                Your role is read-only here. Only an authorized
+                administrator should change account permissions.
+            </small>
+
+            <button type="submit" class="btn btn-primary">
+                Save Changes
+            </button>
+
+            <button type="button" id="resetSettingsBtn"
+                    class="btn btn-outline" style="margin-left:8px">
+                Reset
+            </button>
+
+            <p id="settingsMessage" role="status"
+               style="margin-top:15px"></p>
+
+        </form>
+
+    </div>
+
+    <!-- Display Preferences -->
+    <div class="card" style="max-width:800px;margin-top:20px">
+
+        <h3>Display Preferences</h3>
+        <p style="color:#64748b;margin-top:6px">
+            Customize how the dashboard looks on this browser.
+        </p>
+
+        <label for="settingsTheme"
+               style="display:block;margin-top:20px">
+            Theme
+        </label>
+
+        <select id="settingsTheme"
+                style="width:100%;margin:7px 0 15px;padding:11px;
+                       border:1px solid #cbd5e1;border-radius:6px">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+        </select>
+
+        <button type="button" id="savePreferencesBtn"
+                class="btn btn-primary">
+            Save Preferences
+        </button>
+
+        <p id="preferencesMessage" role="status"
+           style="margin-top:12px"></p>
+
+    </div>
+
+</div>
+
+
+    </section>
+
+</main>
+
+
+<script>
+
+    function showPage(pageId, element) {
+
+        document.querySelectorAll(".page").forEach(page => {
+            page.classList.remove("active");
+        });
+
+        document.getElementById(pageId).classList.add("active");
+
+        document.querySelectorAll(".menu-item").forEach(item => {
+            item.classList.remove("active");
+        });
+
+        if (element) {
+            element.classList.add("active");
+        }
+
+        const titles = {
+            dashboard: "Dashboard",
+            students: "Student Management",
+            subjects: "Subject Management",
+            marks: "Marks Entry",
+            validation: "Marks Validation",
+            consolidation: "Marks Consolidation",
+            grades: "Grade Sheets",
+            reports: "Reports",
+            users: "User Management",
+            settings: "Settings"
+        };
+
+        document.getElementById("topTitle").innerText =
+            titles[pageId] || "IMCGSS";
+    }
+function updateStudentCount() {
+
+    const students =
+        JSON.parse(
+            localStorage.getItem("imcgss_students")
+        ) || [];
+
+    const countElement =
+        document.getElementById("totalStudentsCount");
+
+    if (countElement) {
+        countElement.innerText = students.length;
+    }
+}
+
+updateStudentCount();
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Read the current user's details from browser storage.
+    // These are display details, not proof of secure authentication.
+    const storedName =
+        localStorage.getItem("loggedInUser") ||
+        localStorage.getItem("userName") ||
+        localStorage.getItem("username");
+
+    const storedRole =
+        localStorage.getItem("loggedInRole") ||
+        localStorage.getItem("userRole") ||
+        localStorage.getItem("role");
+
+    const nameElement = document.getElementById("profileName");
+    const roleElement = document.getElementById("profileRole");
+    const avatarElement = document.getElementById("profileAvatar");
+
+    const displayName = storedName || "Guest User";
+    const displayRole = storedRole || "Not signed in";
+
+    nameElement.textContent = displayName;
+    roleElement.textContent = displayRole;
+
+    // Generate initials from the displayed name.
+    const initials = displayName
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(part => part.charAt(0).toUpperCase())
+        .join("");
+
+    avatarElement.textContent = initials || "U";
+
+    // Keep search ready for connection to actual page data.
+    const searchInput = document.getElementById("globalSearch");
+
+    searchInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            const query = searchInput.value.trim();
+
+            if (!query) {
+                return;
+            }
+
+            // For now, report the search term.
+            // We'll connect this to student/subject records next.
+            alert(
+                'Search for "' + query +
+                '" will be connected to the actual records next.'
+            );
+        }
+    });
+
+    document.getElementById("notificationButton")
+        .addEventListener("click", function () {
+            alert("You have no new notifications.");
+        });
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /*
+     * Read records from browser storage.
+     * The storage keys below are examples; we may need to
+     * adjust them to match your existing students page.
+     */
+
+    function readRecords(keys) {
+        for (const key of keys) {
+            const savedData = localStorage.getItem(key);
+
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+
+                    if (Array.isArray(parsedData)) {
+                        return parsedData;
+                    }
+                } catch (error) {
+                    console.warn("Could not read storage key:", key);
+                }
+            }
+        }
+
+        return [];
+    }
+
+    const students = readRecords([
+        "students",
+        "studentData",
+        "imcgssStudents"
+    ]);
+
+    const subjects = readRecords([
+        "subjects",
+        "subjectData",
+        "imcgssSubjects"
+    ]);
+
+    const marks = readRecords([
+        "marks",
+        "marksData",
+        "imcgssMarks"
+    ]);
+
+    // Get the logged-in user's display details.
+    const userName =
+        localStorage.getItem("loggedInUser") ||
+        localStorage.getItem("userName") ||
+        localStorage.getItem("username") ||
+        "Administrator";
+
+    const userRole =
+        localStorage.getItem("loggedInRole") ||
+        localStorage.getItem("userRole") ||
+        localStorage.getItem("role") ||
+        "Administrator";
+
+    // Update welcome message.
+    const welcomeMessage = document.getElementById("welcomeMessage");
+
+    if (welcomeMessage) {
+        welcomeMessage.textContent = "Welcome back, " + userName + " 👋";
+    }
+
+    // Update profile in the top navigation, if present.
+    const profileName = document.getElementById("profileName");
+    const profileRole = document.getElementById("profileRole");
+    const profileAvatar = document.getElementById("profileAvatar");
+
+    if (profileName) profileName.textContent = userName;
+    if (profileRole) profileRole.textContent = userRole;
+
+    if (profileAvatar) {
+        profileAvatar.textContent = userName
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .map(part => part.charAt(0).toUpperCase())
+            .join("") || "U";
+    }
+
+    // Update total students.
+    document.getElementById("totalStudentsCount").textContent =
+        students.length;
+
+    // Update batch information based on student records.
+    const batchNames = new Set(
+        students
+            .map(student => student.batch || student.batchName)
+            .filter(Boolean)
+    );
+
+    document.getElementById("batchSummary").textContent =
+        batchNames.size > 0
+            ? "Across " + batchNames.size + " batch(es)"
+            : "No batch information available";
+
+    // Update subject count.
+    document.getElementById("totalSubjectsCount").textContent =
+        subjects.length;
+
+    /*
+     * Count submitted marks only when records contain a student,
+     * subject, and mark value. Adjust property names if your
+     * existing marks structure is different.
+     */
+    const submittedMarks = marks.filter(mark =>
+        mark.studentId != null &&
+        mark.subjectId != null &&
+        mark.marks != null &&
+        mark.marks !== ""
+    );
+
+    const marksPercentage = marks.length
+        ? Math.round((submittedMarks.length / marks.length) * 100)
+        : 0;
+
+    document.getElementById("marksSubmittedCount").textContent =
+        marksPercentage + "%";
+
+    // Pending review: count records explicitly marked pending.
+    const pendingMarks = marks.filter(mark => {
+        const status = String(mark.status || "").toLowerCase();
+
+        return status === "pending" ||
+               status === "pending review" ||
+               status === "submitted";
+    });
+
+    document.getElementById("pendingReviewCount").textContent =
+        pendingMarks.length;
+
+    // Display subject names when subjects exist.
+    const subjectChart = document.getElementById("subjectChart");
+    subjectChart.replaceChildren();
+
+    if (subjects.length === 0) {
+        subjectChart.textContent = "No subjects added yet.";
+    } else {
+        subjects.forEach(subject => {
+            const wrapper = document.createElement("div");
+            wrapper.className = "bar-wrapper";
+
+            const bar = document.createElement("div");
+            bar.className = "bar";
+
+            const label = document.createElement("span");
+            label.className = "bar-label";
+            label.textContent =
+                subject.subjectName ||
+                subject.name ||
+                subject.subjectCode ||
+                "Unnamed subject";
+
+            wrapper.appendChild(bar);
+            wrapper.appendChild(label);
+            subjectChart.appendChild(wrapper);
+        });
+    }
+
+    // Show only activity actually recorded in browser storage.
+    const activities = readRecords([
+        "recentActivity",
+        "activityLog",
+        "imcgssActivity"
+    ]);
+
+    const activityContainer = document.getElementById("recentActivity");
+    activityContainer.replaceChildren();
+
+    if (activities.length === 0) {
+        const message = document.createElement("p");
+        message.textContent =
+            "No recorded activity yet. Add or update records to begin.";
+        activityContainer.appendChild(message);
+    } else {
+        activities.slice(-4).reverse().forEach(item => {
+            const row = document.createElement("div");
+            row.className = "activity";
+
+            const icon = document.createElement("div");
+            icon.className = "activity-icon";
+            icon.textContent = "✓";
+
+            const details = document.createElement("div");
+
+            const description = document.createElement("p");
+            description.textContent =
+                item.description || item.message || "Record updated";
+
+            const time = document.createElement("small");
+            time.textContent = item.time || item.timestamp || "";
+
+            details.appendChild(description);
+            details.appendChild(time);
+            row.appendChild(icon);
+            row.appendChild(details);
+            activityContainer.appendChild(row);
+        });
+    }
+
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const STORAGE_KEY = "imcgssStudents";
+
+    const formCard = document.getElementById("studentFormCard");
+    const form = document.getElementById("studentForm");
+    const tableBody = document.getElementById("studentTableBody");
+    const searchInput = document.getElementById("studentSearch");
+    const departmentFilter = document.getElementById("departmentFilter");
+    const semesterFilter = document.getElementById("semesterFilter");
+    const batchFilter = document.getElementById("batchFilter");
+    const batchInput = document.getElementById("studentBatch");
+    const message = document.getElementById("studentFormMessage");
+
+    let editingId = null;
+    let students = loadStudents();
+
+    // Department names displayed in the table.
+    const departments = {
+        CSE: "Computer Science & Engineering",
+        AD: "Artificial Intelligence & Data Science",
+        ML: "Machine Learning",
+        IT: "Information Technology",
+        EEE: "Electrical & Electronics Engineering",
+        ECE: "Electronics & Communication Engineering",
+        CIVIL: "Civil Engineering",
+        ME: "Mechanical Engineering",
+        CHE: "Chemical Engineering",
+        AIDS: "Artificial Intelligence & Data Science",
+        AIML: "Artificial Intelligence & Machine Learning",
+        BIO: "Biomedical Engineering",
+        AUTO: "Automobile Engineering",
+        OTHER: "Other"
+    };
+
+    function loadStudents() {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            const parsed = saved ? JSON.parse(saved) : [];
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (error) {
+            console.error("Could not load students:", error);
+            return [];
+        }
+    }
+
+    function saveStudents() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
+            return true;
+        } catch (error) {
+            console.error("Could not save students:", error);
+            alert("Could not save student records in this browser.");
+            return false;
+        }
+    }
+
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, function (char) {
+            return {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            }[char];
+        });
+    }
+
+    // Generate a list of academic batches from 2000 through the current year.
+    // The user can also choose a future batch.
+    function getBatchOptions() {
+        const currentYear = new Date().getFullYear();
+        const batches = new Set();
+
+        for (let start = 2000; start <= currentYear + 6; start++) {
+            batches.add(start + "-" + (start + 4));
+        }
+
+        // Keep previously saved batch values available.
+        students.forEach(student => {
+            if (student.batch) batches.add(student.batch);
+        });
+
+        return Array.from(batches).sort((a, b) => {
+            return Number(b.split("-")[0]) - Number(a.split("-")[0]);
+        });
+    }
+
+    function populateBatchOptions() {
+        const batches = getBatchOptions();
+
+        batchInput.innerHTML =
+            '<option value="">Select Batch</option>' +
+            batches.map(batch =>
+                `<option value="${escapeHTML(batch)}">${escapeHTML(batch)}</option>`
+            ).join("") +
+            '<option value="custom">Enter another batch...</option>';
+
+        batchFilter.innerHTML =
+            '<option value="">All Batches</option>' +
+            batches.map(batch =>
+                `<option value="${escapeHTML(batch)}">${escapeHTML(batch)}</option>`
+            ).join("");
+    }
+
+    // Allow entry of a batch not in the dropdown.
+    batchInput.addEventListener("change", function () {
+        if (batchInput.value === "custom") {
+            const customBatch = prompt(
+                "Enter batch in the format YYYY-YYYY, for example 2025-2029:"
+            );
+
+            if (customBatch && /^\d{4}-\d{4}$/.test(customBatch.trim())) {
+                const option = document.createElement("option");
+                option.value = customBatch.trim();
+                option.textContent = customBatch.trim();
+                batchInput.insertBefore(option, batchInput.querySelector('option[value="custom"]'));
+                batchInput.value = customBatch.trim();
+            } else {
+                batchInput.value = "";
+                if (customBatch !== null) {
+                    alert("Please use the format YYYY-YYYY.");
+                }
+            }
+        }
+    });
+
+    function renderStudents() {
+        const query = searchInput.value.trim().toLowerCase();
+        const department = departmentFilter.value;
+        const semester = semesterFilter.value;
+        const batch = batchFilter.value;
+
+        const filtered = students.filter(student => {
+            const matchesSearch =
+                String(student.name || "").toLowerCase().includes(query) ||
+                String(student.roll || "").toLowerCase().includes(query);
+
+            return matchesSearch &&
+                (!department || student.department === department) &&
+                (!semester || String(student.semester) === semester) &&
+                (!batch || student.batch === batch);
+        });
+
+        if (filtered.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align:center;padding:20px">
+                        No students found. Click "+ Add Student" to add a record.
+                    </td>
+                </tr>`;
+        } else {
+            tableBody.innerHTML = filtered.map(student => `
+                <tr>
+                    <td>${escapeHTML(student.roll)}</td>
+                    <td>${escapeHTML(student.name)}</td>
+                    <td>${escapeHTML(student.department)}</td>
+                    <td>${escapeHTML("Semester " + student.semester)}</td>
+                    <td>${escapeHTML(student.batch)}</td>
+                    <td>
+                        <span class="badge ${student.status === "Active" ? "success" : ""}">
+                            ${escapeHTML(student.status)}
+                        </span>
+                    </td>
+                    <td>
+                        <button type="button" class="btn edit-student" data-id="${escapeHTML(student.id)}">
+                            Edit
+                        </button>
+                        <button type="button" class="btn delete-student" data-id="${escapeHTML(student.id)}">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            `).join("");
+        }
+
+        document.getElementById("studentCountMessage").textContent =
+            `Showing ${filtered.length} of ${students.length} student(s).`;
+
+        // Update dashboard count if the dashboard element is present.
+        const dashboardCount = document.getElementById("totalStudentsCount");
+        if (dashboardCount) dashboardCount.textContent = students.length;
+
+        // Keep the dashboard's batch summary in sync.
+        const dashboardBatch = document.getElementById("batchSummary");
+        if (dashboardBatch) {
+            const distinctBatches = new Set(
+                students.map(student => student.batch).filter(Boolean)
+            );
+            dashboardBatch.textContent = distinctBatches.size
+                ? `Across ${distinctBatches.size} batch(es)`
+                : "No batch information available";
+        }
+    }
+
+    document.getElementById("addStudentBtn").addEventListener("click", function () {
+        editingId = null;
+        form.reset();
+        document.getElementById("studentFormTitle").textContent = "Add New Student";
+        document.getElementById("saveStudentBtn").textContent = "Save Student";
+        message.textContent = "";
+        formCard.style.display = "block";
+        document.getElementById("studentRoll").focus();
+    });
+
+    document.getElementById("cancelStudentBtn").addEventListener("click", function () {
+        form.reset();
+        editingId = null;
+        formCard.style.display = "none";
+        message.textContent = "";
+    });
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const roll = document.getElementById("studentRoll").value.trim();
+        const name = document.getElementById("studentName").value.trim();
+        const department = document.getElementById("studentDepartment").value;
+        const semester = document.getElementById("studentSemester").value;
+        const batch = batchInput.value;
+        const status = document.getElementById("studentStatus").value;
+
+        if (!roll || !name || !department || !semester || !batch || !status) {
+            message.textContent = "Please fill in all fields.";
+            return;
+        }
+
+        const duplicate = students.some(student =>
+            student.roll.toLowerCase() === roll.toLowerCase() &&
+            student.id !== editingId
+        );
+
+        if (duplicate) {
+            message.textContent = "That roll number already exists. Please use a unique roll number.";
+            return;
+        }
+
+        const student = {
+            id: editingId || (
+                window.crypto && crypto.randomUUID
+                    ? crypto.randomUUID()
+                    : String(Date.now())
+            ),
+            roll,
+            name,
+            department,
+            semester,
+            batch,
+            status
+        };
+
+        if (editingId) {
+            students = students.map(existing =>
+                existing.id === editingId ? student : existing
+            );
+        } else {
+            students.push(student);
+        }
+
+        if (!saveStudents()) return;
+
+        populateBatchOptions();
+        renderStudents();
+
+        form.reset();
+        editingId = null;
+        formCard.style.display = "none";
+        message.textContent = "";
+    });
+
+    tableBody.addEventListener("click", function (event) {
+        const editButton = event.target.closest(".edit-student");
+        const deleteButton = event.target.closest(".delete-student");
+
+        if (editButton) {
+            const student = students.find(item => item.id === editButton.dataset.id);
+            if (!student) return;
+
+            editingId = student.id;
+
+            document.getElementById("studentFormTitle").textContent = "Edit Student";
+            document.getElementById("saveStudentBtn").textContent = "Update Student";
+            document.getElementById("studentRoll").value = student.roll;
+            document.getElementById("studentName").value = student.name;
+            document.getElementById("studentDepartment").value = student.department;
+            document.getElementById("studentSemester").value = String(student.semester);
+
+            // Add the student's batch if it is not in the current options.
+            if (![...batchInput.options].some(option => option.value === student.batch)) {
+                const option = document.createElement("option");
+                option.value = student.batch;
+                option.textContent = student.batch;
+                batchInput.appendChild(option);
+            }
+
+            batchInput.value = student.batch;
+            document.getElementById("studentStatus").value = student.status;
+
+            formCard.style.display = "block";
+            message.textContent = "";
+        }
+
+        if (deleteButton) {
+            const student = students.find(item => item.id === deleteButton.dataset.id);
+            if (!student) return;
+
+            if (confirm(`Delete student "${student.name}" (${student.roll})?`)) {
+                students = students.filter(item => item.id !== student.id);
+
+                if (saveStudents()) {
+                    populateBatchOptions();
+                    renderStudents();
+                }
+            }
+        }
+    });
+
+    [searchInput, departmentFilter, semesterFilter, batchFilter].forEach(element => {
+        element.addEventListener("input", renderStudents);
+        element.addEventListener("change", renderStudents);
+    });
+
+    populateBatchOptions();
+    renderStudents();
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const STORAGE_KEY = "imcgssSubjects";
+
+    const form = document.getElementById("subjectForm");
+    const formCard = document.getElementById("subjectFormCard");
+    const tableBody = document.getElementById("subjectTableBody");
+    const searchInput = document.getElementById("subjectSearch");
+    const departmentFilter = document.getElementById("subjectDepartmentFilter");
+    const yearFilter = document.getElementById("subjectYearFilter");
+    const semesterFilter = document.getElementById("subjectSemesterFilter");
+    const message = document.getElementById("subjectFormMessage");
+
+    let editingId = null;
+    let subjects = loadSubjects();
+
+    function loadSubjects() {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            const data = saved ? JSON.parse(saved) : [];
+            return Array.isArray(data) ? data : [];
+        } catch (error) {
+            console.error("Could not load subjects:", error);
+            return [];
+        }
+    }
+
+    function saveSubjects() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(subjects));
+            return true;
+        } catch (error) {
+            alert("Unable to save subjects in browser storage.");
+            return false;
+        }
+    }
+
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, function (char) {
+            return {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            }[char];
+        });
+    }
+
+    function renderSubjects() {
+        const query = searchInput.value.trim().toLowerCase();
+        const department = departmentFilter.value;
+        const year = yearFilter.value;
+        const semester = semesterFilter.value;
+
+        const filtered = subjects.filter(subject => {
+            const matchesSearch =
+                String(subject.code || "").toLowerCase().includes(query) ||
+                String(subject.name || "").toLowerCase().includes(query);
+
+            return matchesSearch &&
+                (!department || subject.department === department) &&
+                (!year || String(subject.year) === year) &&
+                (!semester || String(subject.semester) === semester);
+        });
+
+        if (filtered.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="9" style="text-align:center;padding:20px">
+                        No subjects found. Click "+ Add Subject" to create one.
+                    </td>
+                </tr>`;
+        } else {
+            tableBody.innerHTML = filtered.map(subject => `
+                <tr>
+                    <td>${escapeHTML(subject.code)}</td>
+                    <td>${escapeHTML(subject.name)}</td>
+                    <td>${escapeHTML(subject.department)}</td>
+                    <td>${escapeHTML("Year " + subject.year)}</td>
+                    <td>${escapeHTML("Semester " + subject.semester)}</td>
+                    <td>${escapeHTML(subject.credits)}</td>
+                    <td>${escapeHTML(subject.assessment)}</td>
+                    <td>
+                        <span class="badge ${subject.status === "Active" ? "success" : ""}">
+                            ${escapeHTML(subject.status)}
+                        </span>
+                    </td>
+                    <td>
+                        <button type="button" class="btn edit-subject"
+                            data-id="${escapeHTML(subject.id)}">Edit</button>
+
+                        <button type="button" class="btn delete-subject"
+                            data-id="${escapeHTML(subject.id)}">Delete</button>
+                    </td>
+                </tr>
+            `).join("");
+        }
+
+        document.getElementById("subjectCountMessage").textContent =
+            `Showing ${filtered.length} of ${subjects.length} subject(s).`;
+
+        // Update dashboard subject count if present.
+        const dashboardCount = document.getElementById("totalSubjectsCount");
+        if (dashboardCount) {
+            dashboardCount.textContent = subjects.length;
+        }
+
+        // Refresh dashboard subject names when that chart exists.
+        const chart = document.getElementById("subjectChart");
+
+        if (chart) {
+            chart.replaceChildren();
+
+            if (subjects.length === 0) {
+                chart.textContent = "No subjects added yet.";
+            } else {
+                subjects.slice(0, 8).forEach(subject => {
+                    const wrapper = document.createElement("div");
+                    wrapper.className = "bar-wrapper";
+
+                    const bar = document.createElement("div");
+                    bar.className = "bar";
+                    bar.style.height = "50%";
+                    bar.title = subject.name;
+
+                    const label = document.createElement("span");
+                    label.className = "bar-label";
+                    label.textContent = subject.code;
+
+                    wrapper.appendChild(bar);
+                    wrapper.appendChild(label);
+                    chart.appendChild(wrapper);
+                });
+            }
+        }
+    }
+
+    document.getElementById("addSubjectBtn").addEventListener("click", function () {
+        editingId = null;
+        form.reset();
+
+        document.getElementById("subjectFormTitle").textContent = "Add New Subject";
+        document.getElementById("saveSubjectBtn").textContent = "Save Subject";
+
+        message.textContent = "";
+        formCard.style.display = "block";
+        document.getElementById("subjectCode").focus();
+    });
+
+    document.getElementById("cancelSubjectBtn").addEventListener("click", function () {
+        form.reset();
+        editingId = null;
+        formCard.style.display = "none";
+        message.textContent = "";
+    });
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const code = document.getElementById("subjectCode").value.trim();
+        const name = document.getElementById("subjectName").value.trim();
+        const department = document.getElementById("subjectDepartment").value;
+        const year = document.getElementById("subjectYear").value;
+        const semester = document.getElementById("subjectSemester").value;
+        const credits = document.getElementById("subjectCredits").value;
+        const assessment = document.getElementById("subjectAssessment").value.trim();
+        const status = document.getElementById("subjectStatus").value;
+
+        if (!code || !name || !department || !year ||
+            !semester || credits === "" || !assessment || !status) {
+            message.textContent = "Please fill in all fields.";
+            return;
+        }
+
+        const duplicate = subjects.some(subject =>
+            subject.code.toLowerCase() === code.toLowerCase() &&
+            subject.id !== editingId
+        );
+
+        if (duplicate) {
+            message.textContent = "This subject code already exists. Please enter a unique code.";
+            return;
+        }
+
+        const subject = {
+            id: editingId || (
+                window.crypto && crypto.randomUUID
+                    ? crypto.randomUUID()
+                    : String(Date.now())
+            ),
+            code,
+            name,
+            department,
+            year,
+            semester,
+            credits: Number(credits),
+            assessment,
+            status
+        };
+
+        if (editingId) {
+            subjects = subjects.map(existing =>
+                existing.id === editingId ? subject : existing
+            );
+        } else {
+            subjects.push(subject);
+        }
+
+        if (!saveSubjects()) return;
+
+        renderSubjects();
+
+        form.reset();
+        editingId = null;
+        formCard.style.display = "none";
+        message.textContent = "";
+    });
+
+    tableBody.addEventListener("click", function (event) {
+        const editButton = event.target.closest(".edit-subject");
+        const deleteButton = event.target.closest(".delete-subject");
+
+        if (editButton) {
+            const subject = subjects.find(item => item.id === editButton.dataset.id);
+            if (!subject) return;
+
+            editingId = subject.id;
+
+            document.getElementById("subjectFormTitle").textContent = "Edit Subject";
+            document.getElementById("saveSubjectBtn").textContent = "Update Subject";
+
+            document.getElementById("subjectCode").value = subject.code;
+            document.getElementById("subjectName").value = subject.name;
+            document.getElementById("subjectDepartment").value = subject.department;
+            document.getElementById("subjectYear").value = String(subject.year);
+            document.getElementById("subjectSemester").value = String(subject.semester);
+            document.getElementById("subjectCredits").value = subject.credits;
+            document.getElementById("subjectAssessment").value = subject.assessment;
+            document.getElementById("subjectStatus").value = subject.status;
+
+            formCard.style.display = "block";
+            message.textContent = "";
+        }
+
+        if (deleteButton) {
+            const subject = subjects.find(item => item.id === deleteButton.dataset.id);
+            if (!subject) return;
+
+            if (confirm(`Delete subject "${subject.name}" (${subject.code})?`)) {
+                subjects = subjects.filter(item => item.id !== subject.id);
+
+                if (saveSubjects()) {
+                    renderSubjects();
+                }
+            }
+        }
+    });
+
+    [searchInput, departmentFilter, yearFilter, semesterFilter].forEach(element => {
+        element.addEventListener("input", renderSubjects);
+        element.addEventListener("change", renderSubjects);
+    });
+
+    renderSubjects();
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const STUDENT_KEY = "imcgssStudents";
+    const SUBJECT_KEY = "imcgssSubjects";
+    const MARKS_KEY = "imcgssMarks";
+
+    const academicYear = document.getElementById("marksAcademicYear");
+    const semester = document.getElementById("marksSemester");
+    const department = document.getElementById("marksDepartment");
+    const subject = document.getElementById("marksSubject");
+    const assessment = document.getElementById("marksAssessment");
+    const maximumInput = document.getElementById("maximumMarks");
+    const searchInput = document.getElementById("marksSearch");
+    const tableBody = document.getElementById("marksTableBody");
+    const message = document.getElementById("marksMessage");
+    const count = document.getElementById("marksCount");
+
+    let students = readArray(STUDENT_KEY);
+    let subjects = readArray(SUBJECT_KEY);
+    let marks = readArray(MARKS_KEY);
+
+    // Read a saved array from browser storage.
+    function readArray(key) {
+        try {
+            const value = JSON.parse(localStorage.getItem(key) || "[]");
+            return Array.isArray(value) ? value : [];
+        } catch {
+            return [];
+        }
+    }
+
+    function saveMarks() {
+        try {
+            localStorage.setItem(MARKS_KEY, JSON.stringify(marks));
+            return true;
+        } catch (error) {
+            message.textContent =
+                "Could not save marks in this browser. Please check browser storage.";
+            return false;
+        }
+    }
+
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[char]);
+    }
+
+    function unique(values) {
+        return [...new Set(values.filter(value =>
+            value !== undefined && value !== null && String(value).trim() !== ""
+        ))];
+    }
+
+    // Academic years are displayed as 2026-2027, etc.
+    function populateAcademicYears() {
+        const currentYear = new Date().getFullYear();
+        const years = [];
+
+        for (let start = currentYear - 4; start <= currentYear + 2; start++) {
+            years.push(`${start}-${start + 1}`);
+        }
+
+        academicYear.innerHTML =
+            '<option value="">Select Academic Year</option>' +
+            years.map(year =>
+                `<option value="${year}">${year}</option>`
+            ).join("");
+
+        const currentAcademicYear =
+            new Date().getMonth() >= 5
+                ? `${currentYear}-${currentYear + 1}`
+                : `${currentYear - 1}-${currentYear}`;
+
+        academicYear.value = years.includes(currentAcademicYear)
+            ? currentAcademicYear
+            : years[0];
+    }
+
+    function populateSemesters() {
+        semester.innerHTML =
+            '<option value="">Select Semester</option>' +
+            Array.from({ length: 8 }, (_, index) => {
+                const value = index + 1;
+                return `<option value="${value}">Semester ${value}</option>`;
+            }).join("");
+    }
+
+    function populateDepartments() {
+        const departments = unique([
+            ...students.map(item => item.department),
+            ...subjects.map(item => item.department)
+        ]).sort();
+
+        department.innerHTML =
+            '<option value="">Select Department</option>' +
+            departments.map(value =>
+                `<option value="${escapeHTML(value)}">${escapeHTML(value)}</option>`
+            ).join("");
+    }
+
+    function populateSubjects() {
+        const selectedDepartment = department.value;
+        const selectedSemester = semester.value;
+
+        const filtered = subjects.filter(item =>
+            (!selectedDepartment || item.department === selectedDepartment) &&
+            (!selectedSemester || String(item.semester) === selectedSemester) &&
+            (!item.status || item.status === "Active")
+        );
+
+        subject.innerHTML =
+            '<option value="">Select Subject</option>' +
+            filtered.map(item =>
+                `<option value="${escapeHTML(item.id)}">
+                    ${escapeHTML(item.code)} - ${escapeHTML(item.name)}
+                </option>`
+            ).join("");
+    }
+
+    function getSelectedSubject() {
+        return subjects.find(item => String(item.id) === subject.value);
+    }
+
+    function getSelectedStudents() {
+        return students.filter(item =>
+            item.status !== "Inactive" &&
+            item.department === department.value &&
+            String(item.semester) === semester.value
+        );
+    }
+
+    function getMark(studentId, subjectId, assessmentName, year) {
+        return marks.find(item =>
+            String(item.studentId) === String(studentId) &&
+            String(item.subjectId) === String(subjectId) &&
+            item.assessment === assessmentName &&
+            item.academicYear === year
+        );
+    }
+
+    function renderMarks() {
+        const selectedSubject = getSelectedSubject();
+        const selectedStudents = getSelectedStudents();
+        const query = searchInput.value.trim().toLowerCase();
+
+        if (!academicYear.value || !semester.value ||
+            !department.value || !selectedSubject) {
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align:center;padding:20px">
+                        Select an academic year, semester, department and subject.
+                    </td>
+                </tr>`;
+
+            count.textContent = "";
+            return;
+        }
+
+        const maximum = Number(maximumInput.value);
+
+        if (!Number.isFinite(maximum) || maximum <= 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align:center">
+                        Enter a maximum mark greater than zero.
+                    </td>
+                </tr>`;
+            count.textContent = "";
+            return;
+        }
+
+        const filteredStudents = selectedStudents.filter(student =>
+            String(student.name || "").toLowerCase().includes(query) ||
+            String(student.roll || "").toLowerCase().includes(query)
+        );
+
+        if (filteredStudents.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align:center;padding:20px">
+                        No matching students found for this selection.
+                    </td>
+                </tr>`;
+        } else {
+            tableBody.innerHTML = filteredStudents.map(student => {
+                const existing = getMark(
+                    student.id,
+                    selectedSubject.id,
+                    assessment.value,
+                    academicYear.value
+                );
+
+                const savedValue = existing ? existing.obtained : "";
+
+                const valid = savedValue === "" ||
+                    (Number(savedValue) >= 0 && Number(savedValue) <= maximum);
+
+                return `
+                    <tr data-student-id="${escapeHTML(student.id)}">
+                        <td>${escapeHTML(student.roll)}</td>
+                        <td>${escapeHTML(student.name)}</td>
+                        <td>${maximum}</td>
+                        <td>
+                            <input
+                                class="obtained-mark"
+                                type="number"
+                                min="0"
+                                max="${maximum}"
+                                step="0.01"
+                                value="${escapeHTML(savedValue)}"
+                                placeholder="Enter marks"
+                                style="width:110px"
+                                aria-label="Marks for ${escapeHTML(student.name)}"
+                            >
+                        </td>
+                        <td class="validation-cell">
+                            <span class="badge ${valid ? "success" : ""}">
+                                ${valid ? (savedValue === "" ? "Not entered" : "Valid") : "Invalid"}
+                            </span>
+                        </td>
+                    </tr>`;
+            }).join("");
+        }
+
+        count.textContent =
+            `Students available: ${selectedStudents.length} · Displaying: ${filteredStudents.length}`;
+    }
+
+    function updateValidation(input) {
+        const value = input.value;
+        const maximum = Number(maximumInput.value);
+        const cell = input.closest("tr").querySelector(".validation-cell");
+
+        let text = "Valid";
+        let valid = true;
+
+        if (value === "") {
+            text = "Not entered";
+        } else if (!Number.isFinite(Number(value)) ||
+                   Number(value) < 0 ||
+                   Number(value) > maximum) {
+            text = `Enter 0–${maximum}`;
+            valid = false;
+        }
+
+        cell.innerHTML = `
+            <span class="badge ${valid && value !== "" ? "success" : ""}">
+                ${escapeHTML(text)}
+            </span>`;
+    }
+
+    tableBody.addEventListener("input", function (event) {
+        if (event.target.classList.contains("obtained-mark")) {
+            updateValidation(event.target);
+        }
+    });
+
+    document.getElementById("saveMarksBtn").addEventListener("click", function () {
+
+        const selectedSubject = getSelectedSubject();
+
+        if (!academicYear.value || !semester.value ||
+            !department.value || !selectedSubject) {
+            message.textContent =
+                "Please select the academic year, semester, department and subject first.";
+            return;
+        }
+
+        const maximum = Number(maximumInput.value);
+
+        if (!Number.isFinite(maximum) || maximum <= 0) {
+            message.textContent = "Maximum marks must be greater than zero.";
+            return;
+        }
+
+        const rows = [...tableBody.querySelectorAll("tr[data-student-id]")];
+
+        if (rows.length === 0) {
+            message.textContent = "There are no student marks to save.";
+            return;
+        }
+
+        const changes = [];
+
+        for (const row of rows) {
+            const input = row.querySelector(".obtained-mark");
+            const value = input.value.trim();
+
+            // Empty inputs do not create a mark record.
+            if (value === "") continue;
+
+            const obtained = Number(value);
+
+            if (!Number.isFinite(obtained) || obtained < 0 || obtained > maximum) {
+                updateValidation(input);
+                input.focus();
+                message.textContent =
+                    "Some marks are invalid. Correct them before saving.";
+                return;
+            }
+
+            changes.push({
+                studentId: row.dataset.studentId,
+                studentRoll: row.cells[0].textContent,
+                studentName: row.cells[1].textContent,
+                subjectId: selectedSubject.id,
+                subjectCode: selectedSubject.code,
+                subjectName: selectedSubject.name,
+                department: department.value,
+                semester: semester.value,
+                academicYear: academicYear.value,
+                assessment: assessment.value,
+                maximum: maximum,
+                obtained: obtained,
+                status: "Submitted",
+                updatedAt: new Date().toISOString()
+            });
+        }
+
+        // Save by student + subject + assessment + academic year.
+        // Existing matching records are updated instead of duplicated.
+        for (const change of changes) {
+            const index = marks.findIndex(item =>
+                String(item.studentId) === String(change.studentId) &&
+                String(item.subjectId) === String(change.subjectId) &&
+                item.assessment === change.assessment &&
+                item.academicYear === change.academicYear
+            );
+
+            if (index >= 0) {
+                marks[index] = {
+                    ...marks[index],
+                    ...change
+                };
+            } else {
+                marks.push({
+                    id: window.crypto && crypto.randomUUID
+                        ? crypto.randomUUID()
+                        : String(Date.now()) + Math.random().toString(16).slice(2),
+                    ...change
+                });
+            }
+        }
+
+        if (changes.length === 0) {
+            message.textContent = "No marks were entered. Nothing to save.";
+            return;
+        }
+
+        if (saveMarks()) {
+            message.textContent =
+                `Successfully saved marks for ${changes.length} student(s).`;
+
+            renderMarks();
+        }
+    });
+
+    [academicYear, semester, department, subject, assessment].forEach(element => {
+        element.addEventListener("change", function () {
+            if (element === department || element === semester) {
+                populateSubjects();
+            }
+            renderMarks();
+        });
+    });
+
+    maximumInput.addEventListener("change", renderMarks);
+    searchInput.addEventListener("input", renderMarks);
+
+    populateAcademicYears();
+    populateSemesters();
+    populateDepartments();
+    populateSubjects();
+    renderMarks();
+
+});
+</script>
+<script>
+(function () {
+    "use strict";
+
+    const MARKS_KEY = "imcgssMarks";
+    const STUDENTS_KEY = "imcgssStudents";
+    const SUBJECTS_KEY = "imcgssSubjects";
+
+    let validationRecords = [];
+
+    function readStorage(key) {
+        try {
+            const data = JSON.parse(localStorage.getItem(key) || "[]");
+            return Array.isArray(data) ? data : [];
+        } catch (error) {
+            console.error("Unable to read " + key, error);
+            return [];
+        }
+    }
+
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, function (char) {
+            return {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            }[char];
+        });
+    }
+
+    function getStatus(record) {
+        const maximum = Number(record.maximum);
+        const obtained = record.obtained;
+        const status = String(record.status || "").toLowerCase();
+
+        // An empty mark is missing, not zero.
+        if (
+            obtained === null ||
+            obtained === undefined ||
+            String(obtained).trim() === ""
+        ) {
+            return {
+                status: "Missing",
+                issue: "Marks not entered"
+            };
+        }
+
+        const mark = Number(obtained);
+
+        if (
+            !Number.isFinite(mark) ||
+            !Number.isFinite(maximum) ||
+            maximum <= 0 ||
+            mark < 0 ||
+            mark > maximum
+        ) {
+            return {
+                status: "Invalid",
+                issue: "Marks must be between 0 and the maximum"
+            };
+        }
+
+        if (status === "missing") {
+            return {
+                status: "Missing",
+                issue: "Marks not entered"
+            };
+        }
+
+        return {
+            status: "Valid",
+            issue: "—"
+        };
+    }
+
+    function buildRecords() {
+        const marks = readStorage(MARKS_KEY);
+        const students = readStorage(STUDENTS_KEY);
+        const subjects = readStorage(SUBJECTS_KEY);
+
+        const studentMap = new Map(
+            students.map(student => [String(student.id), student])
+        );
+
+        const subjectMap = new Map(
+            subjects.map(subject => [String(subject.id), subject])
+        );
+
+        return marks.map(mark => {
+            const student = studentMap.get(String(mark.studentId)) || {};
+            const subject = subjectMap.get(String(mark.subjectId)) || {};
+
+            const result = getStatus(mark);
+
+            return {
+                studentName:
+                    mark.studentName ||
+                    student.name ||
+                    mark.studentRoll ||
+                    "Unknown student",
+
+                subjectName:
+                    mark.subjectName ||
+                    subject.name ||
+                    mark.subjectCode ||
+                    "Unknown subject",
+
+                component: mark.assessment || "Not specified",
+
+                obtained: mark.obtained,
+                maximum: mark.maximum,
+
+                status: result.status,
+                issue: result.issue
+            };
+        });
+    }
+
+    function renderStats(records) {
+        document.getElementById("validationTotal").textContent =
+            records.length;
+
+        document.getElementById("validationValid").textContent =
+            records.filter(r => r.status === "Valid").length;
+
+        document.getElementById("validationMissing").textContent =
+            records.filter(r => r.status === "Missing").length;
+
+        document.getElementById("validationInvalid").textContent =
+            records.filter(r => r.status === "Invalid").length;
+    }
+
+    function renderTable() {
+        const body = document.getElementById("validationTableBody");
+        const search = document.getElementById("validationSearch")
+            .value.trim().toLowerCase();
+
+        const selectedStatus =
+            document.getElementById("validationStatusFilter").value;
+
+        const filtered = validationRecords.filter(record => {
+            const searchableText = [
+                record.studentName,
+                record.subjectName,
+                record.component,
+                record.status,
+                record.issue
+            ].join(" ").toLowerCase();
+
+            const matchesSearch = searchableText.includes(search);
+
+            const matchesStatus =
+                selectedStatus === "all" ||
+                record.status === selectedStatus;
+
+            return matchesSearch && matchesStatus;
+        });
+
+        if (filtered.length === 0) {
+            body.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align:center;padding:24px">
+                        No matching validation records found.
+                    </td>
+                </tr>
+            `;
+        } else {
+            body.innerHTML = filtered.map(record => {
+                let badgeClass = "success";
+
+                if (record.status === "Missing") {
+                    badgeClass = "warning";
+                } else if (record.status === "Invalid") {
+                    badgeClass = "danger";
+                }
+
+                let marksText = "—";
+
+                if (
+                    record.obtained !== null &&
+                    record.obtained !== undefined &&
+                    String(record.obtained).trim() !== ""
+                ) {
+                    marksText =
+                        String(record.obtained) + " / " +
+                        String(record.maximum ?? "—");
+                }
+
+                return `
+                    <tr>
+                        <td>${escapeHTML(record.studentName)}</td>
+                        <td>${escapeHTML(record.subjectName)}</td>
+                        <td>${escapeHTML(record.component)}</td>
+                        <td>${escapeHTML(marksText)}</td>
+                        <td>
+                            <span class="badge ${badgeClass}">
+                                ${escapeHTML(record.status)}
+                            </span>
+                        </td>
+                        <td>${escapeHTML(record.issue)}</td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        document.getElementById("validationMessage").textContent =
+            "Showing " + filtered.length +
+            " of " + validationRecords.length + " records.";
+    }
+
+    function refreshValidation() {
+        validationRecords = buildRecords();
+        renderStats(validationRecords);
+        renderTable();
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("refreshValidationBtn")
+            .addEventListener("click", refreshValidation);
+
+        document.getElementById("validationSearch")
+            .addEventListener("input", renderTable);
+
+        document.getElementById("validationStatusFilter")
+            .addEventListener("change", renderTable);
+
+        refreshValidation();
+    });
+
+    // Allow other modules to refresh validation after saving marks.
+    window.refreshIMCGSSValidation = refreshValidation;
+})();
+</script>
+
+<script>
+(function () {
+    "use strict";
+
+    const STUDENTS_KEY = "imcgssStudents";
+    const SUBJECTS_KEY = "imcgssSubjects";
+    const MARKS_KEY = "imcgssMarks";
+
+    let consolidatedRows = [];
+    let consolidatedSubjects = [];
+    let hasConsolidated = false;
+
+    function readStorage(key) {
+        try {
+            const data = JSON.parse(localStorage.getItem(key) || "[]");
+            return Array.isArray(data) ? data : [];
+        } catch (error) {
+            console.error("Could not read " + key, error);
+            return [];
+        }
+    }
+
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, function (char) {
+            return {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            }[char];
+        });
+    }
+
+    function normalize(value) {
+        return String(value ?? "").trim().toLowerCase();
+    }
+
+    function getMarkValue(mark) {
+        if (
+            mark.obtained === null ||
+            mark.obtained === undefined ||
+            String(mark.obtained).trim() === ""
+        ) {
+            return null;
+        }
+
+        const obtained = Number(mark.obtained);
+        const maximum = Number(mark.maximum);
+
+        if (
+            !Number.isFinite(obtained) ||
+            !Number.isFinite(maximum) ||
+            maximum <= 0 ||
+            obtained < 0 ||
+            obtained > maximum
+        ) {
+            return null;
+        }
+
+        return obtained;
+    }
+
+    function getGrade(percentage) {
+        if (percentage >= 90) return "A+";
+        if (percentage >= 80) return "A";
+        if (percentage >= 70) return "B+";
+        if (percentage >= 60) return "B";
+        if (percentage >= 50) return "C";
+        if (percentage >= 40) return "D";
+        return "F";
+    }
+
+    function fillSelect(id, values, firstLabel) {
+        const select = document.getElementById(id);
+        const oldValue = select.value;
+
+        select.innerHTML =
+            '<option value="">' + escapeHTML(firstLabel) + '</option>';
+
+        [...new Set(values.map(String))]
+            .filter(value => value.trim() !== "")
+            .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+            .forEach(value => {
+                const option = document.createElement("option");
+                option.value = value;
+                option.textContent = value;
+                select.appendChild(option);
+            });
+
+        if ([...select.options].some(option => option.value === oldValue)) {
+            select.value = oldValue;
+        }
+    }
+
+    function initializeFilters() {
+        const students = readStorage(STUDENTS_KEY);
+        const subjects = readStorage(SUBJECTS_KEY);
+        const marks = readStorage(MARKS_KEY);
+
+        const academicYears = [
+            ...students.map(s => s.academicYear),
+            ...subjects.map(s => s.academicYear),
+            ...marks.map(m => m.academicYear)
+        ].filter(Boolean);
+
+        fillSelect(
+            "consolidationAcademicYear",
+            academicYears,
+            "All Academic Years"
+        );
+
+        fillSelect(
+            "consolidationSemester",
+            [
+                ...students.map(s => s.semester),
+                ...subjects.map(s => s.semester),
+                ...marks.map(m => m.semester)
+            ].filter(value => value !== null && value !== undefined),
+            "All Semesters"
+        );
+
+        fillSelect(
+            "consolidationDepartment",
+            [
+                ...students.map(s => s.department),
+                ...subjects.map(s => s.department),
+                ...marks.map(m => m.department)
+            ],
+            "All Departments"
+        );
+
+        fillSelect(
+            "consolidationBatch",
+            students.map(s => s.batch).filter(Boolean),
+            "All Batches"
+        );
+    }
+
+    function getAcademicYear(mark) {
+        return String(mark.academicYear || "");
+    }
+
+    function matchesFilters(student, academicYear, semester, department, batch) {
+        if (
+            semester &&
+            String(student.semester) !== semester
+        ) {
+            return false;
+        }
+
+        if (
+            department &&
+            normalize(student.department) !== normalize(department)
+        ) {
+            return false;
+        }
+
+        if (
+            batch &&
+            String(student.batch) !== batch
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function consolidate() {
+        const students = readStorage(STUDENTS_KEY);
+        const subjects = readStorage(SUBJECTS_KEY);
+        const marks = readStorage(MARKS_KEY);
+
+        const academicYear =
+            document.getElementById("consolidationAcademicYear").value;
+        const semester =
+            document.getElementById("consolidationSemester").value;
+        const department =
+            document.getElementById("consolidationDepartment").value;
+        const batch =
+            document.getElementById("consolidationBatch").value;
+
+        const filteredSubjects = subjects.filter(subject => {
+            if (
+                semester &&
+                String(subject.semester) !== semester
+            ) return false;
+
+            if (
+                department &&
+                normalize(subject.department) !== normalize(department)
+            ) return false;
+
+            return true;
+        });
+
+        // Use subjects that have marks for the selected academic year.
+        const subjectsWithMarks = filteredSubjects.filter(subject =>
+            marks.some(mark =>
+                String(mark.subjectId) === String(subject.id) &&
+                (!academicYear || getAcademicYear(mark) === academicYear) &&
+                (!semester || String(mark.semester) === semester) &&
+                (!department ||
+                    normalize(mark.department || subject.department) ===
+                    normalize(department))
+            )
+        );
+
+        consolidatedSubjects = subjectsWithMarks;
+
+        const filteredStudents = students.filter(student =>
+            matchesFilters(
+                student,
+                academicYear,
+                semester,
+                department,
+                batch
+            ) &&
+            normalize(student.status || "Active") !== "inactive"
+        );
+
+        consolidatedRows = filteredStudents.map(student => {
+            const subjectMarks = {};
+            let totalObtained = 0;
+            let totalMaximum = 0;
+            let recordedSubjects = 0;
+
+            subjectsWithMarks.forEach(subject => {
+                const matchingMark = marks.find(mark =>
+                    String(mark.studentId) === String(student.id) &&
+                    String(mark.subjectId) === String(subject.id) &&
+                    (!academicYear ||
+                        getAcademicYear(mark) === academicYear) &&
+                    (!semester ||
+                        String(mark.semester) === semester) &&
+                    (!department ||
+                        normalize(mark.department || subject.department) ===
+                        normalize(department))
+                );
+
+                const value = matchingMark
+                    ? getMarkValue(matchingMark)
+                    : null;
+
+                if (value !== null) {
+                    subjectMarks[String(subject.id)] = value;
+                    totalObtained += value;
+                    totalMaximum += Number(matchingMark.maximum);
+                    recordedSubjects++;
+                } else {
+                    subjectMarks[String(subject.id)] = null;
+                }
+            });
+
+            const percentage = totalMaximum > 0
+                ? (totalObtained / totalMaximum) * 100
+                : null;
+
+            return {
+                roll: student.roll || student.rollNumber || "—",
+                name: student.name || "Unknown",
+                subjectMarks,
+                total: totalObtained,
+                maximum: totalMaximum,
+                percentage,
+                grade: percentage === null
+                    ? "—"
+                    : getGrade(percentage),
+                recordedSubjects,
+                expectedSubjects: subjectsWithMarks.length
+            };
+        });
+
+        hasConsolidated = true;
+        renderTable();
+    }
+
+    function renderTable() {
+        const head = document.getElementById("consolidationTableHead");
+        const body = document.getElementById("consolidationTableBody");
+
+        const search = normalize(
+            document.getElementById("consolidationSearch").value
+        );
+
+        head.innerHTML = `
+            <tr>
+                <th>Roll No</th>
+                <th>Student</th>
+                ${consolidatedSubjects.map(subject =>
+                    `<th>${escapeHTML(subject.code || subject.name)}</th>`
+                ).join("")}
+                <th>Total</th>
+                <th>Percentage</th>
+                <th>Grade</th>
+            </tr>
+        `;
+
+        const filteredRows = consolidatedRows.filter(row =>
+            normalize(row.roll + " " + row.name).includes(search)
+        );
+
+        if (filteredRows.length === 0) {
+            body.innerHTML = `
+                <tr>
+                    <td colspan="${consolidatedSubjects.length + 5}"
+                        style="text-align:center;padding:24px">
+                        No students or marks found for the selected filters.
+                    </td>
+                </tr>
+            `;
+        } else {
+            body.innerHTML = filteredRows.map(row => {
+                const subjectCells = consolidatedSubjects.map(subject => {
+                    const value = row.subjectMarks[String(subject.id)];
+
+                    return `<td>${value === null || value === undefined
+                        ? "—"
+                        : escapeHTML(value)}</td>`;
+                }).join("");
+
+                const totalText = row.maximum > 0
+                    ? `${row.total} / ${row.maximum}`
+                    : "—";
+
+                const percentageText = row.percentage === null
+                    ? "—"
+                    : row.percentage.toFixed(1) + "%";
+
+                const gradeClass = row.grade === "F"
+                    ? "danger"
+                    : row.grade === "—"
+                        ? "warning"
+                        : "blue";
+
+                return `
+                    <tr>
+                        <td>${escapeHTML(row.roll)}</td>
+                        <td>${escapeHTML(row.name)}</td>
+                        ${subjectCells}
+                        <td>${escapeHTML(totalText)}</td>
+                        <td>${escapeHTML(percentageText)}</td>
+                        <td>
+                            <span class="badge ${gradeClass}">
+                                ${escapeHTML(row.grade)}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        const completeCount = filteredRows.filter(row =>
+            row.expectedSubjects > 0 &&
+            row.recordedSubjects === row.expectedSubjects
+        ).length;
+
+        document.getElementById("consolidationMessage").textContent =
+            (hasConsolidated
+                ? "Showing " + filteredRows.length + " student(s). "
+                : "") +
+            "Subjects: " + consolidatedSubjects.length +
+            ". Complete records: " + completeCount + ".";
+
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        initializeFilters();
+
+        document.getElementById("consolidateMarksBtn")
+            .addEventListener("click", consolidate);
+
+        document.getElementById("consolidationSearch")
+            .addEventListener("input", function () {
+                if (hasConsolidated) renderTable();
+            });
+
+        [
+            "consolidationAcademicYear",
+            "consolidationSemester",
+            "consolidationDepartment",
+            "consolidationBatch"
+        ].forEach(id => {
+            document.getElementById(id).addEventListener("change", function () {
+                hasConsolidated = false;
+
+                document.getElementById("consolidationMessage").textContent =
+                    "Filters changed. Click Consolidate Marks to update results.";
+            });
+        });
+
+        window.addEventListener("storage", function (event) {
+            if (
+                [STUDENTS_KEY, SUBJECTS_KEY, MARKS_KEY].includes(event.key)
+            ) {
+                initializeFilters();
+                if (hasConsolidated) consolidate();
+            }
+        });
+    });
+})();
+</script>
+<script>
+(function () {
+    "use strict";
+
+    const STUDENTS_KEY = "imcgssStudents";
+    const SUBJECTS_KEY = "imcgssSubjects";
+    const MARKS_KEY = "imcgssMarks";
+
+    function readStorage(key) {
+        try {
+            const value = JSON.parse(localStorage.getItem(key) || "[]");
+            return Array.isArray(value) ? value : [];
+        } catch (error) {
+            console.error("Error reading " + key, error);
+            return [];
+        }
+    }
+
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[char]);
+    }
+
+    function normalize(value) {
+        return String(value ?? "").trim().toLowerCase();
+    }
+
+    function getValidMark(mark) {
+        if (
+            mark.obtained === null ||
+            mark.obtained === undefined ||
+            String(mark.obtained).trim() === ""
+        ) {
+            return null;
+        }
+
+        const obtained = Number(mark.obtained);
+        const maximum = Number(mark.maximum);
+
+        if (
+            !Number.isFinite(obtained) ||
+            !Number.isFinite(maximum) ||
+            maximum <= 0 ||
+            obtained < 0 ||
+            obtained > maximum
+        ) {
+            return null;
+        }
+
+        return { obtained, maximum };
+    }
+
+    // Example grading scale. Change it to match your college's rules.
+    function getGrade(percentage) {
+        if (percentage >= 90) return "A+";
+        if (percentage >= 80) return "A";
+        if (percentage >= 70) return "B+";
+        if (percentage >= 60) return "B";
+        if (percentage >= 50) return "C";
+        if (percentage >= 40) return "D";
+        return "F";
+    }
+
+    function getPerformance(percentage) {
+        if (percentage === null) return "Marks unavailable";
+        if (percentage >= 90) return "Outstanding";
+        if (percentage >= 80) return "Excellent";
+        if (percentage >= 70) return "Very Good";
+        if (percentage >= 60) return "Good";
+        if (percentage >= 50) return "Satisfactory";
+        if (percentage >= 40) return "Pass";
+        return "Below passing threshold";
+    }
+
+    function populateOptions(select, options, firstLabel) {
+        const previous = select.value;
+
+        select.innerHTML = "";
+
+        const first = document.createElement("option");
+        first.value = "";
+        first.textContent = firstLabel;
+        select.appendChild(first);
+
+        [...new Set(options.map(String))]
+            .filter(value => value.trim() !== "")
+            .sort((a, b) =>
+                a.localeCompare(b, undefined, { numeric: true })
+            )
+            .forEach(value => {
+                const option = document.createElement("option");
+                option.value = value;
+                option.textContent = value;
+                select.appendChild(option);
+            });
+
+        if ([...select.options].some(option => option.value === previous)) {
+            select.value = previous;
+        }
+    }
+
+    function initializeGradeSheet() {
+        const students = readStorage(STUDENTS_KEY);
+        const subjects = readStorage(SUBJECTS_KEY);
+        const marks = readStorage(MARKS_KEY);
+
+        const studentSelect = document.getElementById("gradeStudentSelect");
+        const yearSelect = document.getElementById("gradeAcademicYearSelect");
+
+        const oldStudent = studentSelect.value;
+
+        studentSelect.innerHTML =
+            '<option value="">Select a student</option>';
+
+        students.forEach(student => {
+            const option = document.createElement("option");
+            option.value = String(student.id);
+            option.textContent =
+                (student.roll || student.rollNumber || "") +
+                " - " + (student.name || "Unnamed student");
+
+            studentSelect.appendChild(option);
+        });
+
+        if ([...studentSelect.options].some(
+            option => option.value === oldStudent
+        )) {
+            studentSelect.value = oldStudent;
+        }
+
+        populateOptions(
+            yearSelect,
+            marks.map(mark => mark.academicYear).filter(Boolean),
+            "All academic years"
+        );
+
+        updateGradeSheet();
+    }
+
+    function updateGradeSheet() {
+        const students = readStorage(STUDENTS_KEY);
+        const subjects = readStorage(SUBJECTS_KEY);
+        const marks = readStorage(MARKS_KEY);
+
+        const studentId =
+            document.getElementById("gradeStudentSelect").value;
+
+        const semester =
+            document.getElementById("gradeSemesterSelect").value;
+
+        const academicYear =
+            document.getElementById("gradeAcademicYearSelect").value;
+
+        const message = document.getElementById("gradeSheetMessage");
+        const tbody = document.getElementById("gradeSheetTableBody");
+        const summary = document.getElementById("gradeSummary");
+
+        if (!studentId) {
+            resetGradeSheet();
+            message.textContent = "Select a student to generate their grade sheet.";
+            return;
+        }
+
+        const student = students.find(
+            item => String(item.id) === String(studentId)
+        );
+
+        if (!student) {
+            resetGradeSheet();
+            message.textContent =
+                "Student not found. Refresh the page and try again.";
+            return;
+        }
+
+        document.getElementById("gradeStudentName").textContent =
+            student.name || "—";
+
+        document.getElementById("gradeRollNumber").textContent =
+            student.roll || student.rollNumber || "—";
+
+        document.getElementById("gradeDepartment").textContent =
+            student.department || "—";
+
+        document.getElementById("gradeDepartmentHeading").textContent =
+            "Department of " + (student.department || "Engineering");
+
+        document.getElementById("gradeBatch").textContent =
+            student.batch || "—";
+
+        document.getElementById("gradeSemester").textContent =
+            semester ? "Semester " + semester : "All available";
+
+        document.getElementById("gradeAcademicYear").textContent =
+            academicYear || "All available";
+
+        const studentMarks = marks.filter(mark => {
+            if (String(mark.studentId) !== String(student.id)) {
+                return false;
+            }
+
+            if (semester && String(mark.semester) !== semester) {
+                return false;
+            }
+
+            if (academicYear &&
+                String(mark.academicYear || "") !== academicYear) {
+                return false;
+            }
+
+            return true;
+        });
+
+        // Group records by subject. If several assessment components
+        // exist for a subject, their marks are added together.
+        const grouped = new Map();
+
+        studentMarks.forEach(mark => {
+            const subject = subjects.find(
+                item => String(item.id) === String(mark.subjectId)
+            );
+
+            const key = String(mark.subjectId || mark.subjectCode || mark.subjectName);
+
+            if (!grouped.has(key)) {
+                grouped.set(key, {
+                    code: mark.subjectCode || (subject && subject.code) || "—",
+                    name: mark.subjectName || (subject && subject.name) || "Unknown subject",
+                    obtained: 0,
+                    maximum: 0,
+                    validComponents: 0,
+                    missingComponents: 0
+                });
+            }
+
+            const group = grouped.get(key);
+            const valid = getValidMark(mark);
+
+            if (valid) {
+                group.obtained += valid.obtained;
+                group.maximum += valid.maximum;
+                group.validComponents++;
+            } else {
+                group.missingComponents++;
+            }
+        });
+
+        const rows = [...grouped.values()];
+
+        if (rows.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align:center">
+                        No marks found for this student and selection.
+                    </td>
+                </tr>
+            `;
+
+            summary.innerHTML =
+                "<strong>Overall Internal Performance: Marks unavailable</strong>";
+
+            message.textContent =
+                "No matching marks records were found. Enter and save marks first.";
+            return;
+        }
+
+        let totalObtained = 0;
+        let totalMaximum = 0;
+        let missingCount = 0;
+
+        tbody.innerHTML = rows.map(row => {
+            const hasValidMarks = row.validComponents > 0;
+            const hasMissing = row.missingComponents > 0;
+
+            if (hasValidMarks) {
+                totalObtained += row.obtained;
+                totalMaximum += row.maximum;
+            }
+
+            missingCount += row.missingComponents;
+
+            let marksText = "—";
+            let grade = "—";
+
+            if (hasValidMarks) {
+                marksText = row.obtained + " / " + row.maximum;
+
+                if (!hasMissing && row.maximum > 0) {
+                    grade = getGrade(
+                        row.obtained / row.maximum * 100
+                    );
+                } else {
+                    grade = "Incomplete";
+                }
+            } else if (hasMissing) {
+                grade = "Missing";
+            }
+
+            return `
+                <tr>
+                    <td>${escapeHTML(row.code)}</td>
+                    <td>${escapeHTML(row.name)}</td>
+                    <td>${escapeHTML(marksText)}</td>
+                    <td>${escapeHTML(grade)}</td>
+                </tr>
+            `;
+        }).join("");
+
+        const percentage = totalMaximum > 0
+            ? totalObtained / totalMaximum * 100
+            : null;
+
+        const overallGrade = percentage === null
+            ? "—"
+            : getGrade(percentage);
+
+        const performance = getPerformance(percentage);
+
+        summary.innerHTML = `
+            <strong>Overall Internal Performance: ${escapeHTML(performance)}</strong>
+            <p style="margin-top:8px">
+                Total Marks: ${escapeHTML(totalObtained)} /
+                ${escapeHTML(totalMaximum)}
+            </p>
+            <p style="margin-top:6px">
+                Percentage: ${percentage === null
+                    ? "—"
+                    : escapeHTML(percentage.toFixed(2) + "%")}
+            </p>
+            <p style="margin-top:6px">
+                Overall Grade: ${escapeHTML(overallGrade)}
+            </p>
+            ${missingCount > 0
+                ? `<p style="margin-top:6px;color:#b45309">
+                    Some assessment marks are missing or invalid.
+                   </p>`
+                : ""}
+        `;
+
+        message.textContent =
+            "Grade sheet generated for " + (student.name || "the selected student") + ".";
+    }
+
+    function resetGradeSheet() {
+        [
+            "gradeStudentName",
+            "gradeRollNumber",
+            "gradeDepartment",
+            "gradeBatch"
+        ].forEach(id => {
+            document.getElementById(id).textContent = "—";
+        });
+
+        document.getElementById("gradeDepartmentHeading").textContent =
+            "Department of Engineering";
+
+        document.getElementById("gradeSemester").textContent = "—";
+        document.getElementById("gradeAcademicYear").textContent = "—";
+
+        document.getElementById("gradeSheetTableBody").innerHTML = `
+            <tr>
+                <td colspan="4" style="text-align:center">
+                    Select a student to display marks.
+                </td>
+            </tr>
+        `;
+
+        document.getElementById("gradeSummary").innerHTML =
+            "<strong>Overall Internal Performance: —</strong>";
+    }
+
+    function printGradeSheet() {
+        const studentId =
+            document.getElementById("gradeStudentSelect").value;
+
+        if (!studentId) {
+            alert("Please select a student first.");
+            return;
+        }
+
+        window.print();
+    }
+
+    function downloadGradeSheetPDF() {
+        const studentId =
+            document.getElementById("gradeStudentSelect").value;
+
+        if (!studentId) {
+            alert("Please select a student first.");
+            return;
+        }
+
+        // Uses the browser's print dialog. Select "Save as PDF".
+        window.print();
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        initializeGradeSheet();
+
+        document.getElementById("gradeStudentSelect")
+            .addEventListener("change", updateGradeSheet);
+
+        document.getElementById("gradeSemesterSelect")
+            .addEventListener("change", updateGradeSheet);
+
+        document.getElementById("gradeAcademicYearSelect")
+            .addEventListener("change", updateGradeSheet);
+
+        document.getElementById("printGradeSheetBtn")
+            .addEventListener("click", printGradeSheet);
+
+        document.getElementById("downloadGradeSheetBtn")
+            .addEventListener("click", downloadGradeSheetPDF);
+
+        window.addEventListener("storage", function (event) {
+            if ([STUDENTS_KEY, SUBJECTS_KEY, MARKS_KEY].includes(event.key)) {
+                initializeGradeSheet();
+            }
+        });
+    });
+})();
+</script>
+<script>
+(function () {
+    const $ = id => document.getElementById(id);
+
+    const readData = key => {
+        try {
+            const data = JSON.parse(localStorage.getItem(key) || "[]");
+            return Array.isArray(data) ? data : [];
+        } catch {
+            return [];
+        }
+    };
+
+    let currentReport = "performance";
+    let currentRows = [];
+
+    const escapeHTML = value =>
+        String(value ?? "").replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[char]);
+
+    function getData() {
+        return {
+            students: readData("imcgssStudents"),
+            subjects: readData("imcgssSubjects"),
+            marks: readData("imcgssMarks")
+        };
+    }
+
+    function isValidMark(mark) {
+        const obtained = Number(mark.obtained);
+        const maximum = Number(mark.maximum);
+
+        return mark.obtained !== "" &&
+            mark.obtained !== null &&
+            Number.isFinite(obtained) &&
+            Number.isFinite(maximum) &&
+            maximum > 0 &&
+            obtained >= 0 &&
+            obtained <= maximum;
+    }
+
+    function gradeFor(percentage) {
+        if (percentage >= 90) return "A+";
+        if (percentage >= 80) return "A";
+        if (percentage >= 70) return "B+";
+        if (percentage >= 60) return "B";
+        if (percentage >= 50) return "C";
+        if (percentage >= 40) return "D";
+        return "F";
+    }
+
+    function makeReports() {
+        const { students, subjects, marks } = getData();
+
+        const validMarks = marks.filter(isValidMark);
+
+        // Match records using IDs when available, with roll/code fallback.
+        const hasMarks = (student, subject) => validMarks.some(mark => {
+            const studentMatches = student.id != null && mark.studentId != null
+                ? String(mark.studentId) === String(student.id)
+                : String(mark.studentRoll ?? mark.roll ?? "") ===
+                  String(student.roll ?? "");
+
+            const subjectMatches = subject.id != null && mark.subjectId != null
+                ? String(mark.subjectId) === String(subject.id)
+                : String(mark.subjectCode ?? mark.code ?? "") ===
+                  String(subject.code ?? "");
+
+            return studentMatches && subjectMatches;
+        });
+
+        // A missing record means no valid mark exists for that
+        // student-subject pair in the current local dataset.
+        const missingRows = [];
+
+        students.forEach(student => {
+            subjects.forEach(subject => {
+                const sameDepartment =
+                    !student.department || !subject.department ||
+                    student.department === subject.department;
+
+                const sameSemester =
+                    !student.semester || !subject.semester ||
+                    String(student.semester) === String(subject.semester);
+
+                if (sameDepartment && sameSemester &&
+                    !hasMarks(student, subject)) {
+                    missingRows.push({
+                        roll: student.roll,
+                        student: student.name,
+                        department: student.department,
+                        semester: student.semester,
+                        subjectCode: subject.code,
+                        subject: subject.name
+                    });
+                }
+            });
+        });
+
+        // Aggregate valid assessment records by student.
+        const totals = new Map();
+
+        validMarks.forEach(mark => {
+            const student = students.find(s =>
+                (s.id != null && mark.studentId != null &&
+                 String(s.id) === String(mark.studentId)) ||
+                (String(s.roll ?? "") !== "" &&
+                 String(s.roll) === String(mark.studentRoll ?? ""))
+            );
+
+            const key = student
+                ? String(student.id ?? student.roll)
+                : String(mark.studentId ?? mark.studentRoll ?? "");
+
+            if (!key) return;
+
+            if (!totals.has(key)) {
+                totals.set(key, {
+                    student: student?.name ?? mark.studentName ?? "Unknown",
+                    roll: student?.roll ?? mark.studentRoll ?? "",
+                    department: student?.department ?? mark.department ?? "",
+                    semester: student?.semester ?? mark.semester ?? "",
+                    obtained: 0,
+                    maximum: 0,
+                    records: 0
+                });
+            }
+
+            const item = totals.get(key);
+            item.obtained += Number(mark.obtained);
+            item.maximum += Number(mark.maximum);
+            item.records++;
+        });
+
+        const performanceRows = [...totals.values()].map(item => ({
+            ...item,
+            percentage: item.maximum
+                ? (item.obtained / item.maximum) * 100
+                : 0
+        }));
+
+        const gradeRows = performanceRows.map(item => ({
+            ...item,
+            grade: gradeFor(item.percentage)
+        }));
+
+        const subjectRows = subjects.map(subject => {
+            const related = validMarks.filter(mark =>
+                (subject.id != null && mark.subjectId != null &&
+                 String(subject.id) === String(mark.subjectId)) ||
+                (String(subject.code ?? "") !== "" &&
+                 String(subject.code) === String(mark.subjectCode ?? ""))
+            );
+
+            const obtained = related.reduce(
+                (sum, mark) => sum + Number(mark.obtained), 0);
+            const maximum = related.reduce(
+                (sum, mark) => sum + Number(mark.maximum), 0);
+
+            return {
+                code: subject.code,
+                subject: subject.name,
+                department: subject.department,
+                semester: subject.semester,
+                studentsMarked: new Set(related.map(mark =>
+                    String(mark.studentId ?? mark.studentRoll ?? "")
+                )).size,
+                percentage: maximum ? obtained / maximum * 100 : null
+            };
+        });
+
+        return {
+            students,
+            subjects,
+            marks,
+            performanceRows,
+            subjectRows,
+            missingRows,
+            gradeRows
+        };
+    }
+
+    const reportConfig = {
+        performance: {
+            title: "Student Performance Report",
+            description: "Combined percentage from valid saved assessment marks.",
+            columns: [
+                ["roll", "Roll Number"],
+                ["student", "Student"],
+                ["department", "Department"],
+                ["semester", "Semester"],
+                ["records", "Mark Records"],
+                ["percentage", "Percentage"]
+            ]
+        },
+        subjects: {
+            title: "Subject-wise Report",
+            description: "Saved subjects and their recorded assessment results.",
+            columns: [
+                ["code", "Subject Code"],
+                ["subject", "Subject"],
+                ["department", "Department"],
+                ["semester", "Semester"],
+                ["studentsMarked", "Students Marked"],
+                ["percentage", "Average Percentage"]
+            ]
+        },
+        missing: {
+            title: "Missing Marks Report",
+            description: "Student-subject pairs without any valid saved mark.",
+            columns: [
+                ["roll", "Roll Number"],
+                ["student", "Student"],
+                ["department", "Department"],
+                ["semester", "Semester"],
+                ["subjectCode", "Subject Code"],
+                ["subject", "Subject"]
+            ]
+        },
+        grades: {
+            title: "Grade Report",
+            description: "Illustrative grades calculated from combined saved marks. Confirm your college's official grading rules.",
+            columns: [
+                ["roll", "Roll Number"],
+                ["student", "Student"],
+                ["department", "Department"],
+                ["semester", "Semester"],
+                ["obtained", "Marks Obtained"],
+                ["maximum", "Maximum Marks"],
+                ["percentage", "Percentage"],
+                ["grade", "Grade"]
+            ]
+        }
+    };
+
+    function displayValue(key, value) {
+        if (value == null || value === "") return "—";
+        if (key === "percentage") {
+            return typeof value === "number" ? value.toFixed(2) + "%" : value;
+        }
+        if (key === "obtained" || key === "maximum") {
+            return typeof value === "number" ? value.toFixed(2) : value;
+        }
+        return value;
+    }
+
+    function renderReport() {
+        const reports = makeReports();
+
+        $("reportStudentCount").textContent = reports.students.length;
+        $("reportSubjectCount").textContent = reports.subjects.length;
+        $("reportMissingCount").textContent = reports.missingRows.length;
+        $("reportGradedCount").textContent = reports.gradeRows.length;
+
+        const reportRows = {
+            performance: reports.performanceRows,
+            subjects: reports.subjectRows,
+            missing: reports.missingRows,
+            grades: reports.gradeRows
+        };
+
+        const config = reportConfig[currentReport];
+        const query = ($("reportSearch").value || "").toLowerCase().trim();
+
+        currentRows = reportRows[currentReport].filter(row =>
+            Object.values(row).some(value =>
+                String(value ?? "").toLowerCase().includes(query)
+            )
+        );
+
+        $("reportResultTitle").textContent = config.title;
+        $("reportResultDescription").textContent = config.description;
+
+        $("reportTableHead").innerHTML = "<tr>" +
+            config.columns.map(([, label]) =>
+                `<th style="padding:12px;border:1px solid #cbd5e1;
+                    background:#f1f5f9;text-align:left">
+                    ${escapeHTML(label)}</th>`
+            ).join("") + "</tr>";
+
+        $("reportTableBody").innerHTML = currentRows.length
+            ? currentRows.map(row => "<tr>" +
+                config.columns.map(([key]) =>
+                    `<td style="padding:12px;border:1px solid #cbd5e1">
+                        ${escapeHTML(displayValue(key, row[key]))}
+                    </td>`
+                ).join("") + "</tr>").join("")
+            : `<tr><td colspan="${config.columns.length}"
+                    style="padding:18px;text-align:center;color:#64748b">
+                    No matching records found.
+               </td></tr>`;
+
+        $("reportsMessage").textContent =
+            `${currentRows.length} record(s) displayed.`;
+    }
+
+    document.querySelectorAll(".report-view-btn").forEach(button => {
+        button.addEventListener("click", () => {
+            currentReport = button.dataset.report;
+            $("reportSearch").value = "";
+            renderReport();
+        });
+    });
+
+    $("refreshReportsBtn").addEventListener("click", renderReport);
+    $("reportSearch").addEventListener("input", renderReport);
+
+    $("exportReportBtn").addEventListener("click", () => {
+        const config = reportConfig[currentReport];
+
+        const csvCell = value =>
+            '"' + String(value ?? "").replace(/"/g, '""') + '"';
+
+        const lines = [
+            config.columns.map(([, label]) => csvCell(label)).join(","),
+            ...currentRows.map(row =>
+                config.columns.map(([key]) =>
+                    csvCell(displayValue(key, row[key]))
+                ).join(",")
+            )
+        ];
+
+        const blob = new Blob(
+            ["\uFEFF" + lines.join("\r\n")],
+            { type: "text/csv;charset=utf-8;" }
+        );
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = currentReport + "-report.csv";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+    });
+
+    // Update report summaries when other modules save localStorage data.
+    window.addEventListener("storage", renderReport);
+
+    // Initial render
+    renderReport();
+})();
+</script>
+<script>
+(function () {
+    const $ = id => document.getElementById(id);
+    const STORAGE_KEY = "imcgssUsers";
+
+    function loadUsers() {
+        try {
+            const users = JSON.parse(
+                localStorage.getItem(STORAGE_KEY) || "[]"
+            );
+            return Array.isArray(users) ? users : [];
+        } catch {
+            return [];
+        }
+    }
+
+    function saveUsers(users) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+    }
+
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[char]);
+    }
+
+    // Add demo users only when this storage key has never been created.
+    // Remove this block if you do not want demo accounts.
+    if (localStorage.getItem(STORAGE_KEY) === null) {
+        saveUsers([
+            {
+                id: "demo-admin",
+                name: "Diya C K",
+                email: "diya@example.com",
+                role: "Administrator",
+                department: "CSE",
+                status: "Active"
+            },
+            {
+                id: "demo-faculty",
+                name: "Faculty User",
+                email: "faculty@example.com",
+                role: "Faculty",
+                department: "CSE",
+                status: "Active"
+            },
+            {
+                id: "demo-hod",
+                name: "HOD User",
+                email: "hod@example.com",
+                role: "HOD / Reviewer",
+                department: "CSE",
+                status: "Active"
+            }
+        ]);
+    }
+
+    function renderUsers() {
+        const users = loadUsers();
+
+        const query = $("userSearch").value.toLowerCase().trim();
+        const role = $("userRoleFilter").value;
+        const status = $("userStatusFilter").value;
+
+        $("totalUsersCount").textContent = users.length;
+        $("activeUsersCount").textContent =
+            users.filter(u => u.status === "Active").length;
+        $("inactiveUsersCount").textContent =
+            users.filter(u => u.status === "Inactive").length;
+
+        const filtered = users.filter(user => {
+            const matchesSearch =
+                String(user.name ?? "").toLowerCase().includes(query) ||
+                String(user.email ?? "").toLowerCase().includes(query);
+
+            return matchesSearch &&
+                (!role || user.role === role) &&
+                (!status || user.status === status);
+        });
+
+        $("usersTableBody").innerHTML = filtered.length
+            ? filtered.map(user => `
+                <tr>
+                    <td>${escapeHTML(user.name)}</td>
+                    <td>${escapeHTML(user.email)}</td>
+                    <td>${escapeHTML(user.role)}</td>
+                    <td>${escapeHTML(user.department)}</td>
+                    <td>
+                        <span class="badge ${
+                            user.status === "Active" ? "success" : ""
+                        }">
+                            ${escapeHTML(user.status)}
+                        </span>
+                    </td>
+                    <td style="white-space:nowrap">
+                        <button class="btn btn-outline"
+                                data-edit-user="${escapeHTML(user.id)}">
+                            Edit
+                        </button>
+                        <button class="btn btn-outline"
+                                data-delete-user="${escapeHTML(user.id)}">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            `).join("")
+            : `<tr>
+                <td colspan="6" style="text-align:center;padding:20px">
+                    No users found.
+                </td>
+               </tr>`;
+
+        $("usersMessage").textContent =
+            `Showing ${filtered.length} of ${users.length} users.`;
+    }
+
+    function closeEditForm() {
+        $("editUserCard").style.display = "none";
+        $("editUserForm").reset();
+        $("editUserMessage").textContent = "";
+    }
+
+    function openEditForm(id) {
+        const user = loadUsers().find(
+            item => String(item.id) === String(id)
+        );
+
+        if (!user) return;
+
+        $("editUserId").value = user.id;
+        $("editUserName").value = user.name || "";
+        $("editUserEmail").value = user.email || "";
+        $("editUserRole").value = user.role || "Faculty";
+        $("editUserDepartment").value = user.department || "";
+        $("editUserStatus").value = user.status || "Active";
+
+        $("editUserCard").style.display = "block";
+        $("editUserMessage").textContent = "";
+        $("editUserCard").scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+
+    $("usersTableBody").addEventListener("click", event => {
+        const editButton = event.target.closest("[data-edit-user]");
+        const deleteButton = event.target.closest("[data-delete-user]");
+
+        if (editButton) {
+            openEditForm(editButton.dataset.editUser);
+            return;
+        }
+
+        if (deleteButton) {
+            const id = deleteButton.dataset.deleteUser;
+            const users = loadUsers();
+            const user = users.find(
+                item => String(item.id) === String(id)
+            );
+
+            if (!user) return;
+
+            if (!confirm(`Delete user "${user.name}"?`)) return;
+
+            saveUsers(users.filter(
+                item => String(item.id) !== String(id)
+            ));
+
+            closeEditForm();
+            renderUsers();
+        }
+    });
+
+    $("editUserForm").addEventListener("submit", event => {
+        event.preventDefault();
+
+        const users = loadUsers();
+        const id = $("editUserId").value;
+        const current = users.find(
+            item => String(item.id) === String(id)
+        );
+
+        if (!current) {
+            $("editUserMessage").textContent = "User not found.";
+            return;
+        }
+
+        const name = $("editUserName").value.trim();
+        const email = $("editUserEmail").value.trim();
+        const department = $("editUserDepartment").value.trim();
+
+        if (!name || !email || !department) {
+            $("editUserMessage").textContent =
+                "Please fill in all fields.";
+            return;
+        }
+
+        const duplicateEmail = users.some(user =>
+            String(user.id) !== String(id) &&
+            String(user.email).toLowerCase() === email.toLowerCase()
+        );
+
+        if (duplicateEmail) {
+            $("editUserMessage").textContent =
+                "Another user already uses this email.";
+            return;
+        }
+
+        current.name = name;
+        current.email = email;
+        current.role = $("editUserRole").value;
+        current.department = department;
+        current.status = $("editUserStatus").value;
+
+        saveUsers(users);
+        closeEditForm();
+        renderUsers();
+    });
+
+    $("cancelEditUserBtn").addEventListener("click", closeEditForm);
+
+    $("userSearch").addEventListener("input", renderUsers);
+    $("userRoleFilter").addEventListener("change", renderUsers);
+    $("userStatusFilter").addEventListener("change", renderUsers);
+
+    // Refresh when another tab changes localStorage.
+    window.addEventListener("storage", event => {
+        if (event.key === STORAGE_KEY) renderUsers();
+    });
+
+    renderUsers();
+})();
+</script>
+<script>
+(function () {
+    const $ = id => document.getElementById(id);
+
+    const PROFILE_KEY = "imcgssProfile";
+    const PREFERENCES_KEY = "imcgssPreferences";
+
+    const defaultProfile = {
+        name: "Diya C K",
+        email: "diya@example.com",
+        role: "Administrator"
+    };
+
+    function readJSON(key, fallback) {
+        try {
+            const value = JSON.parse(localStorage.getItem(key));
+            return value && typeof value === "object" ? value : fallback;
+        } catch {
+            return fallback;
+        }
+    }
+
+    function getProfile() {
+        return {
+            ...defaultProfile,
+            ...readJSON(PROFILE_KEY, {})
+        };
+    }
+
+    function showMessage(id, message, success) {
+        const element = $(id);
+        element.textContent = message;
+        element.style.color = success ? "#15803d" : "#b91c1c";
+    }
+
+    function updateDashboardProfile(profile) {
+        // Update these elements only if they exist on your dashboard.
+        const nameElement = $("profileName");
+        const roleElement = $("profileRole");
+        const avatarElement = $("profileAvatar");
+        const welcomeElement = $("welcomeMessage");
+
+        if (nameElement) {
+            nameElement.textContent = profile.name;
+        }
+
+        if (roleElement) {
+            roleElement.textContent = profile.role;
+        }
+
+        if (avatarElement) {
+            avatarElement.textContent =
+                profile.name.trim().charAt(0).toUpperCase() || "U";
+        }
+
+        if (welcomeElement) {
+            welcomeElement.textContent = "Welcome back, " + profile.name + "!";
+        }
+    }
+
+    function loadSettings() {
+        const profile = getProfile();
+
+        $("settingsName").value = profile.name;
+        $("settingsEmail").value = profile.email;
+
+        // The role is displayed but cannot be changed here.
+        const allowedRoles = [
+            "Administrator",
+            "Faculty",
+            "HOD / Reviewer"
+        ];
+
+        $("settingsRole").value = allowedRoles.includes(profile.role)
+            ? profile.role
+            : "Faculty";
+
+        const preferences = readJSON(PREFERENCES_KEY, {
+            theme: "light"
+        });
+
+        $("settingsTheme").value =
+            preferences.theme === "dark" ? "dark" : "light";
+
+        applyTheme($("settingsTheme").value);
+        updateDashboardProfile(profile);
+    }
+
+    function applyTheme(theme) {
+        // Uses a body attribute so you can style dark mode in CSS.
+        document.body.dataset.theme = theme;
+    }
+
+    $("settingsForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const name = $("settingsName").value.trim();
+        const email = $("settingsEmail").value.trim();
+
+        if (!name || !email) {
+            showMessage(
+                "settingsMessage",
+                "Please enter both your name and email.",
+                false
+            );
+            return;
+        }
+
+        const previousProfile = getProfile();
+
+        const profile = {
+            name,
+            email,
+            // Do not allow a user to change their own permissions here.
+            role: previousProfile.role
+        };
+
+        try {
+            localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+
+            updateDashboardProfile(profile);
+
+            showMessage(
+                "settingsMessage",
+                "Account settings saved successfully!",
+                true
+            );
+        } catch {
+            showMessage(
+                "settingsMessage",
+                "Unable to save settings in this browser.",
+                false
+            );
+        }
+    });
+
+    $("resetSettingsBtn").addEventListener("click", function () {
+        loadSettings();
+        showMessage(
+            "settingsMessage",
+            "The form has been reset to your saved settings.",
+            true
+        );
+    });
+
+    $("savePreferencesBtn").addEventListener("click", function () {
+        const preferences = {
+            theme: $("settingsTheme").value
+        };
+
+        try {
+            localStorage.setItem(
+                PREFERENCES_KEY,
+                JSON.stringify(preferences)
+            );
+
+            applyTheme(preferences.theme);
+
+            showMessage(
+                "preferencesMessage",
+                "Display preferences saved!",
+                true
+            );
+        } catch {
+            showMessage(
+                "preferencesMessage",
+                "Unable to save preferences in this browser.",
+                false
+            );
+        }
+    });
+
+    // Reflect changes made in another browser tab.
+    window.addEventListener("storage", function (event) {
+        if (event.key === PROFILE_KEY ||
+            event.key === PREFERENCES_KEY) {
+            loadSettings();
+        }
+    });
+
+    loadSettings();
+})();
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    if (!logoutBtn) return;
+
+    logoutBtn.addEventListener("click", function () {
+        const confirmLogout = confirm("Are you sure you want to log out?");
+
+        if (confirmLogout) {
+            sessionStorage.removeItem("imcgssLoggedIn");
+            sessionStorage.removeItem("imcgssCurrentUser");
+
+            window.location.href = "login.html";
+        }
+    });
+});
+</script>
+
+</body>
+</html>
